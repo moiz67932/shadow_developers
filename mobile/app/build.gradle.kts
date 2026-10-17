@@ -18,8 +18,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("competition") {
+            val signingPath = providers.environmentVariable("NASCON_SIGNING_STORE").orNull
+            if (signingPath != null) {
+                storeFile = file(signingPath)
+                storePassword = providers.environmentVariable("NASCON_SIGNING_PASSWORD").orNull
+                keyAlias = "nascon"
+                keyPassword = providers.environmentVariable("NASCON_SIGNING_PASSWORD").orNull
+            }
+        }
+    }
     buildTypes {
         release {
+            if (providers.environmentVariable("NASCON_SIGNING_STORE").isPresent) signingConfig = signingConfigs.getByName("competition")
             optimization {
                 enable = true
                 packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
