@@ -1,0 +1,10 @@
+const {z,id,int,parse}=require('../../utils/validation');const {append,project,eventBody}=require('../scoring');const {transfer,transferBody,scenario}=require('../rosters');
+function sync(state,input){const b=parse(z.object({device_id:id,actions:z.array(z.object({action_id:id,type:z.enum(['score_event','roster_transfer']),queued_at:z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/).refine(x=>!Number.isNaN(Date.parse(x))),base_version:int.min(0),payload:z.record(z.unknown())})).min(1).max(100)}),input);const results=Array(b.actions.length),summary={applied:0,rejected:0,duplicate:0};
+ const sorted=b.actions.map((a,i)=>({...a,i})).sort((a,b)=>a.queued_at.localeCompare(b.queued_at)||a.i-b.i);
+ function version(a){if(a.type==='score_event')return project(state,a.payload.match_id).version;const {r}=scenario(state,a.payload.league_id,a.payload.player_id);return r.history.filter(e=>e.player_id===a.payload.player_id).length;}
+ sorted.forEach((a,order)=>{const key=`${b.device_id}|${a.action_id}`;let v=0,result={action_id:a.action_id,status:'rejected',resolution:'server_wins',error_code:null,processed_order:order+1,server_version:0,signature:null};
+ try{if(state.offline[key]){try{v=version(a);}catch{}result.status='duplicate';result.resolution='skipped_duplicate';}
+ else{a.type==='score_event'?eventBody(a.payload):transferBody(a.payload);v=version(a);const existing=a.type==='score_event'&&Object.hasOwn(state.events,a.payload.event_id);if(a.base_version>v&&!existing)result.error_code='INVALID_BASE_VERSION';else{const response=a.type==='score_event'?append(state,a.payload):transfer(state,a.payload);result.status=response.status===200?'duplicate':'applied';result.resolution=response.status===200?'skipped_duplicate':a.base_version<v?'rebased_append':'appended';result.signature=a.type==='score_event'&&response.status!==200?response.body.signature:null;v=version(a);}}}
+ catch(e){if(!e.code)throw e;result.error_code=e.code;}
+ result.server_version=v;state.offline[key]=true;results[a.i]=result;summary[result.status]++;});return {device_id:b.device_id,results,summary};}
+module.exports={sync};

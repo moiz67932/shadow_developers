@@ -19,6 +19,15 @@ Authoritative sources reviewed in full: `NaSCon 26 App Dev Part 1-1.pdf` (22 pag
 
 ## Current implementation status
 
-- Implemented: Docker service definitions; database migration/seed foundation; health; repeatable reset; canonical HMAC; dynamic sport creation; round-robin fixtures; atomic checkout/inventory foundation; rate-limited ping; append-only event foundation.
-- Partial: events do not yet rebuild score projections; fixture formats other than round robin, standings, roster, RBAC, offline sync, real PDF generation, JWT authentication, queue publishing, and Android flows.
-- Unimplemented: remaining audited endpoint contracts and mobile APK delivery.
+- Implemented and tested locally: all mandatory audit route patterns, all four fixture algorithms, replay scoring and compensation, standings, transactional checkout and valid signed PDFs, roster operations/history, RBAC probes, offline synchronization, demo login and tenant-filtered bootstrap. Detailed evidence and limitations: `BACKEND_STATUS.md`.
+- Partial: deferred roster eligibility has no automatic match-end consumer; exact Swiss backtracking is not performance-proven for adversarial maximum fields; the JSONB domain state is not a fully normalized relational schema; broad FR administration features remain incomplete.
+- Missing: mandatory MinIO runtime, realtime transport, Android Room/Keystore/UI and APK. Consequently P0 and overall Part I compliance are not fully complete despite healthy API/database/cache/worker services.
+- Measured verification: 52 passing tests in 6 suites; all six required area line percentages generated in root COVERAGE.json. Branch coverage is 89.47%; line coverage does not establish all hidden cases.
+
+## Source-document conflicts requiring organizer clarification
+
+- Part I §1.3 says public repository and desk registration; booklet §4 says private repository with evaluator invitation.
+- Part I §5.2 specifies organizer Ubuntu 22.04, 4 vCPU/8 GB; booklet §3 describes GitHub ubuntu-latest/16 GB. Implementation targets the stricter Part I environment.
+- Part I totals 50 points (36 backend, 4 offline, 10 UI); booklet's Day 1 schedule labels 40 points.
+- Venue lists and tie-breaking rules differ. Part I-specific endpoint and scoring rules govern our implementation; confirm administrative discrepancies with organizers.
+- Neither failed registry requests nor the broken binary archive proves permanent upstream removal. No replacement MinIO artifact has organizer approval in this session.

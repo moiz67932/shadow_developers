@@ -1,5 +1,6 @@
 const { ApiError } = require('../utils/errors');
 function errorHandler(error, req, res, next) { // eslint-disable-line no-unused-vars
+  if(error.type==='entity.too.large') error=new ApiError(413,'PAYLOAD_TOO_LARGE','Body exceeds 1 MB.');
   if (error instanceof SyntaxError && 'body' in error) error = new ApiError(400, 'VALIDATION_ERROR', 'Malformed JSON.', { fields: [] });
   const status = error.status || 500;
   if (status >= 500) console.error(JSON.stringify({ level: 'error', message: error.message, path: req.path }));

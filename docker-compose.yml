@@ -37,7 +37,7 @@ services:
       PORT: 8080
       DATABASE_URL: postgresql://${POSTGRES_USER:-nascon}:${POSTGRES_PASSWORD:-nascon}@db:5432/${POSTGRES_DB:-nascon}
       REDIS_URL: redis://redis:6379
-      JWT_SECRET: ${JWT_SECRET:-development-only-jwt-secret}
+      JWT_SECRET: ${JWT_SECRET:-}
       DAY1_SALT: ${DAY1_SALT:?DAY1_SALT must be supplied}
       MINIO_ENDPOINT: minio
     depends_on:

@@ -26,5 +26,12 @@
     "jest": "^29.7.0",
     "supertest": "^7.0.0"
   },
-  "jest": { "testEnvironment": "node", "roots": ["<rootDir>/../tests"] }
+  "jest": {
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/../tests"],
+    "setupFiles": ["<rootDir>/../tests/setup.js"],
+    "collectCoverageFrom": ["src/domain/**/*.js"],
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "json-summary", "json"]
+  }
 }
