@@ -35,3 +35,29 @@ New mobile scoring, roster and offline routes authenticate JWT, enforce roles, t
 - Release: build running at checkpoint; signature and installation remain UNVERIFIED.
 
 Do not infer device success from compilation. Updated rehearsal evidence follows below when available.
+
+Local hotspot HTTP hosts are discovered from the laptop's private IPv4 interfaces at build time, or configured explicitly with `-PnasconDevHosts=192.168.1.42`. Network security remains deny-by-default for all other HTTP hosts. If changing to a different laptop address after building, rebuild with that explicit host or use USB forwarding / HTTPS.
+
+## Rehearsal evidence through 14:49 PKT
+
+- Updated backend suite: **56 / 56 passing, 7 suites**, including protected mobile scoring/compensation, manager source-club authorization, demo idempotence/reset isolation, and offline accepted/rejected/duplicate handling.
+- Physical Infinix reconnected, debug installation succeeded and app launched. Actual organizer account/tenant appeared. Standings table showed Falcons played 1, won 1, differential +1 and 3 points, with qualification text.
+- Physical scoring: `demo-live` went from Strikers 1–0 (version 2) to 2–0 (version 3) after submitting a score. A reasoned compensation returned it to 1–0 (version 4).
+- Physical store: selected L variant, checked live stock and added to cart. Checkout/receipt rehearsal still running at this record.
+- Real release variant built with local private signing key. `apksigner verify --verbose` reports **Verifies**, APK Signature Scheme v2 true, one signer. This is a release build, not a renamed debug APK.
+- Release lint tasks are excluded by `build-release.sh` because the cached Material dependency references an uncached desktop lint artifact. Kotlin/resource compilation, optimization, packaging and signature verification still run. Full release lint remains unverified.
+- Physical checkout completed at 14:49: order `7da27f75-a394-4320-a0ae-9132b38f1287`, L jersey ×1, **PKR 4,500.00**, status PAID. The actual server-generated PDF displayed in PdfRenderer and showed the same order/amount. Inventory was consumed normally and has not been reset.
+
+The first optimized release failed at startup on the phone with an R8/Kotlin `IllegalAccessError` in lifecycle initialization. The inherited partial optimization configuration was disabled. A fresh **release** build (31 seconds) was generated and signature-verified, then installed for a new device rehearsal. This fixes the actual variant configuration; debug was not substituted or renamed.
+
+## Signed artifact and current device status at 14:53 PKT
+
+`mobile/release/app-release.apk` SHA-256:
+`e0018166e02183d4dcade7a6a8b14707b0290032f549d134a52149fd9359186a`
+
+- Package `com.example.nasconsports`, version 1.0, minSdk 24 (includes Android 10/API29), target/compile SDK37.
+- INTERNET and ACCESS_NETWORK_STATE present; release is not marked debuggable.
+- Exact corrected signed APK installed on the Infinix successfully. Manager signed in and Home showed the actual `club_manager` role and tenant. Club & roster navigation opened.
+- USB disconnected again at approximately 14:52 before completing roster submission. Hardware was absent from both ADB and lsusb. Reconnection requested.
+- Physical **completed transfer, airplane cached screens, queued score + roster, force-close persistence and sync remain UNVERIFIED** at this timestamp. Their implementation and backend tests must not be presented as a completed physical rehearsal.
+- Evidence screenshots: [match score](qa/match-device.png), [actual paid PDF receipt](qa/receipt-device.png). These two screenshots are from debug rehearsal; the exact signed release launch/login was verified separately.

@@ -11,3 +11,4 @@ mobile/**/build/
 *.keystore
 *.jks
 !mobile/release/app-release.apk
+mobile/.kotlin/

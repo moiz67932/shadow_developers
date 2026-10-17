@@ -45,3 +45,11 @@ Use `POST /api/v1/login` with email/password for a signed JWT, then `GET /api/v1
 The native Kotlin/XML package is `com.example.nasconsports`. Use `http://10.0.2.2:8080` in an emulator, or the laptop LAN address on a phone. The release APK has not yet been built.
 
 Follow [the Android handoff](docs/ANDROID_HANDOFF.md) for API bodies, Room queue format, permissions, demo-data preparation and build steps. WebSocket/SSE transport remains missing; score polling is available. Full protected mobile mutation endpoints, venue conflict tools, broad store lifecycle and deferred roster lifecycle are remaining work detailed in the status document.
+
+### Android competition app
+
+The existing native Kotlin/XML app now includes role-aware login, fixtures, standings, match timeline/scoring, club/roster management, merchandise checkout and an in-app server PDF receipt. It uses the real Docker API and persistent SQLite cache/action history. See [Android delivery and verified rehearsal results](docs/ANDROID_DELIVERY.md).
+
+For the USB phone, run `adb reverse tcp:8080 tcp:8080`, install `mobile/release/app-release.apk`, and use `http://127.0.0.1:8080` in Server settings. Organizer Home has an authenticated, idempotent **Prepare competition demonstration** action. It never modifies the grader reset baseline or replenishes purchased stock.
+
+Build debug with `cd mobile && ./gradlew :app:assembleDebug --offline`. Build a genuinely signed release with `mobile/build-release.sh`; the signing key stays outside the repository. Local hotspot hosts are discovered at build time or explicitly supplied using `-PnasconDevHosts=<laptop-IP>`. Other cleartext hosts are denied. HTTPS addresses remain configurable without a rebuild.
