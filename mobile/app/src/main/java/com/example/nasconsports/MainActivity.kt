@@ -77,11 +77,38 @@ class MainActivity: AppCompatActivity() {
     fun work(task:()->JSONObject,done:(JSONObject)->Unit,failed:((Exception)->Unit)?=null){if(busy)return;busy=true;progress.visibility=View.VISIBLE;banner("Connecting…");val stamp=generation;executor.execute {try{val r=task();runOnUiThread{if(isDestroyed)return@runOnUiThread;busy=false;progress.visibility=View.GONE;online=true;prefs.edit().putString("last",java.text.DateFormat.getDateTimeInstance().format(java.util.Date())).apply();banner();if(stamp==generation)done(r)}}catch(e:Exception){runOnUiThread{if(isDestroyed)return@runOnUiThread;busy=false;progress.visibility=View.GONE;if(e !is ApiError)online=false;banner();if(stamp==generation){if(failed!=null)failed(e)else{val message=if(e is ApiError)e.message?:e.code else "Could not reach your server. Check USB forwarding or hotspot, then retry.";notice(message)}}}}}}
     fun fetch(path:String,done:(JSONObject)->Unit){val key="$owner:$path";if(forcedOffline()){online=false;banner();val cached=local.get(key);if(cached!=null)done(cached)else{card("Not saved on this device","Load this screen online first.");button("Retry"){go(screen)}};return};work({val r=api.call(path);local.put(key,r);r},done,{e->val cached=local.get(key);if(cached!=null){online=false;banner();done(cached)}else{card("Unable to load",if(e is ApiError)e.message?:"Request failed" else "Connect to your server to load this screen for the first time.");button("Retry"){go(screen)}}})}
     fun refresh(done:()->Unit){if(forcedOffline()){online=false;data=local.get("bootstrap:$owner")?:JSONObject();done();banner();return};work({val r=api.call("/api/v1/bootstrap");local.put("bootstrap:$owner",r);r},{r->data=r;done()},{e->if(e is ApiError&&e.code=="UNAUTHENTICATED"){sessions.clear();session=null;api.token="";login();notice("Your session expired. Please sign in again.")}else{data=local.get("bootstrap:$owner")?:JSONObject();done()}})}
-    fun login(){start("Sign in");card("NaSCon / 2026","SPORTS OPERATIONS\nEvery team. Every match. One arena.");text("Welcome back",28f,true);text("Sign in to your league workspace.",15f)
+    fun login(){start("Sign in");card("NaSCon / 2026","League & club operations");text("Welcome back",23f,true);text("Sign in to your league workspace.",13f)
         val emails=listOf("organizer","manager","admin","player","viewer");val choose=picker("Demo account",emails.map{"${it.replaceFirstChar{c->c.uppercase()}} • ${it}@nascon.test"});val email=field("Email","organizer@nascon.test",InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);val password=field("Password","Nascon@26",InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD)
         choose.onItemSelectedListener=object:AdapterView.OnItemSelectedListener{override fun onNothingSelected(p:AdapterView<*>?){};override fun onItemSelected(p:AdapterView<*>?,v:View?,pos:Int,id:Long){email.setText("${emails[pos]}@nascon.test")}}
         button("Sign in"){val e=email.text.toString().trim();if(!android.util.Patterns.EMAIL_ADDRESS.matcher(e).matches()){email.error="Enter a valid email"}else if(password.text.isNullOrEmpty()){password.error="Enter your password"}else work({api.call("/api/v1/login",JSONObject().put("email",e).put("password",password.text.toString()))},{r->session=r;sessions.save(r);api.token=r.getString("token");val vault=remembered.read()?:JSONObject();vault.put(api.base+"|"+e,JSONObject().put("session",r).put("proof",passwordProof(e,password.text.toString())));remembered.save(vault);refresh{go("Home")}})}
-        button("Open remembered account offline"){val e=email.text.toString().trim();val entry=remembered.read()?.optJSONObject(api.base+"|"+e);val cached=entry?.optJSONObject("session");if(cached==null||entry.optString("proof")!=passwordProof(e,password.text.toString())||!validRemembered(cached)){notice("Sign in online to this account first. Remembered sessions must be unexpired and require the correct password.")}else{session=cached;sessions.save(cached);api.token=cached.getString("token");online=false;prefs.edit().putBoolean("offline",true).commit();data=local.get("bootstrap:$owner")?:JSONObject();home()}};button("Server connection settings"){settings()};text("Demo password is provided for competition accounts only.",12f)
+        button("Open remembered account offline"){val e=email.text.toString().trim();val entry=remembered.read()?.optJSONObject(api.base+"|"+e);val cached=entry?.optJSONObject("session");if(cached==null||entry.optString("proof")!=passwordProof(e,password.text.toString())||!validRemembered(cached)){notice("Sign in online to this account first. Remembered sessions must be unexpired and require the correct password.")}else{session=cached;sessions.save(cached);api.token=cached.getString("token");online=false;prefs.edit().putBoolean("offline",true).commit();data=local.get("bootstrap:$owner")?:JSONObject();home()}};button("Server connection settings"){settings()};text("Demo accounts • competition access",11f);compactAuth()
+    }
+    private fun compactAuth() {
+        fun resize(view: View) {
+            when (view) {
+                is EditText -> { view.textSize = 14f; view.minHeight = dp(48) }
+                is com.google.android.material.button.MaterialButton -> {
+                    view.textSize = 13f; view.minHeight = dp(48); view.minimumHeight = dp(48)
+                    (view.layoutParams as? LinearLayout.LayoutParams)?.let { it.bottomMargin = dp(4) }
+                }
+                is com.google.android.material.textfield.TextInputLayout -> {
+                    (view.layoutParams as? LinearLayout.LayoutParams)?.let { it.bottomMargin = dp(8) }
+                }
+                is Spinner -> {
+                    val labels = (0 until view.adapter.count).map { view.adapter.getItem(it).toString() }
+                    view.adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, labels) {
+                        override fun getView(position: Int, convertView: View?, parent: android.view.ViewGroup): View =
+                            super.getView(position, convertView, parent).also { (it as? TextView)?.textSize = 13f }
+                        override fun getDropDownView(position: Int, convertView: View?, parent: android.view.ViewGroup): View =
+                            super.getDropDownView(position, convertView, parent).also { (it as? TextView)?.textSize = 14f }
+                    }
+                    view.minimumHeight = dp(48)
+                    view.layoutParams.height = dp(48)
+                }
+            }
+            if (view is android.view.ViewGroup) for (i in 0 until view.childCount) resize(view.getChildAt(i))
+        }
+        resize(content)
     }
     fun settings(){start("Server settings");card("Connect your arena","USB: http://127.0.0.1:8080\nEmulator: http://10.0.2.2:8080\nHotspot: your configured laptop address");val url=field("Server URL",api.base,InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI)
         val off=android.widget.Switch(this).apply{text="Work offline • use cache and queue actions";isChecked=prefs.getBoolean("offline",false);minHeight=dp(56);setOnCheckedChangeListener{_,checked->prefs.edit().putBoolean("offline",checked).commit();online=!forcedOffline();banner()}};content.addView(off)
