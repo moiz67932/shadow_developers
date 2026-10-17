@@ -1,0 +1,13 @@
+.env
+node_modules/
+backend/node_modules/
+coverage/
+.idea/
+.vscode/
+*.iml
+mobile/.gradle/
+mobile/local.properties
+mobile/**/build/
+*.keystore
+*.jks
+!mobile/release/app-release.apk
