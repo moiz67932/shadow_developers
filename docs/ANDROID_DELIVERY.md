@@ -61,3 +61,7 @@ The first optimized release failed at startup on the phone with an R8/Kotlin `Il
 - USB disconnected again at approximately 14:52 before completing roster submission. Hardware was absent from both ADB and lsusb. Reconnection requested.
 - Physical **completed transfer, airplane cached screens, queued score + roster, force-close persistence and sync remain UNVERIFIED** at this timestamp. Their implementation and backend tests must not be presented as a completed physical rehearsal.
 - Evidence screenshots: [match score](qa/match-device.png), [actual paid PDF receipt](qa/receipt-device.png). These two screenshots are from debug rehearsal; the exact signed release launch/login was verified separately.
+
+At 14:59, the physical signed-release manager rehearsal completed: Bilal Ahmed transfer was accepted, and a fresh backend bootstrap confirmed `demo-bilal` registered in `demo-titans` with registration_type `transfer`.
+
+The user's final UI adjustment reduced only sign-in heading/field/button/dropdown sizes and spacing, retaining 48dp touch targets. The updated release built, verified and installed successfully. Current artifact SHA-256: `d65a85f9953f3ec150fbcbe26ab74fdd7a07be7716a4cbe73f11fb551838242b` (supersedes the earlier artifact hash). There is no sign-up route/screen in the existing backend/app; no unsupported account-registration flow was invented.
