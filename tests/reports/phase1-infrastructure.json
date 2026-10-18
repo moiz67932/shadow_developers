@@ -1,0 +1,150 @@
+{
+  "timestamp": "2026-10-18T07:39:42.456Z",
+  "backend": {
+    "passed": 68,
+    "failed": 0,
+    "skipped": 0,
+    "success": true
+  },
+  "strictIsolatedApiHealth": {
+    "status": 200,
+    "body": {
+      "status": "ok"
+    }
+  },
+  "accountIdentity": {
+    "status": 200,
+    "sub": "user-manager",
+    "role": "club_manager",
+    "tenant_id": "tenant-alpha",
+    "club_id": "club-alpha-1",
+    "player_id": null
+  },
+  "guestWrites": [
+    {
+      "path": "/api/v1/chat",
+      "status": 403,
+      "code": "GUEST_WRITE_FORBIDDEN"
+    },
+    {
+      "path": "/audit/v1/checkout",
+      "status": 403,
+      "code": "GUEST_WRITE_FORBIDDEN"
+    },
+    {
+      "path": "/audit/v1/events",
+      "status": 403,
+      "code": "GUEST_WRITE_FORBIDDEN"
+    }
+  ],
+  "grid": {
+    "ready": true,
+    "nodes": [
+      {
+        "version": "4.25.0 (revision 030fcf7918)",
+        "availability": "UP",
+        "browser": "chrome"
+      },
+      {
+        "version": "4.25.0 (revision 030fcf7918)",
+        "availability": "UP",
+        "browser": "chrome"
+      },
+      {
+        "version": "4.25.0 (revision 030fcf7918)",
+        "availability": "UP",
+        "browser": "firefox"
+      }
+    ]
+  },
+  "services": {
+    "api": {
+      "running": true,
+      "health": "healthy"
+    },
+    "worker": {
+      "running": true,
+      "health": "not-configured-in-existing-container"
+    },
+    "db": {
+      "running": true,
+      "health": "healthy"
+    },
+    "redis": {
+      "running": true,
+      "health": "healthy"
+    },
+    "minio": {
+      "running": true,
+      "health": "healthy"
+    },
+    "mediamtx": {
+      "running": true,
+      "health": "healthy"
+    },
+    "selenium-hub": {
+      "running": true,
+      "health": "healthy"
+    },
+    "node-chrome-1": {
+      "running": true,
+      "health": "healthy"
+    },
+    "node-chrome-2": {
+      "running": true,
+      "health": "healthy"
+    },
+    "node-firefox": {
+      "running": true,
+      "health": "healthy"
+    }
+  },
+  "newIsolatedWorkerHealth": "healthy",
+  "officialDay2AvailableInLiveApi": false,
+  "productionApiRolloutComplete": false,
+  "coldFullStackStartupVerified": false,
+  "minioArtifact": {
+    "bytes": 36768266,
+    "sha256": "4d913d8d5d83766b5903d1b95bfa40744e278573739bd05bb4dd447a25fe8319"
+  },
+  "changedFiles": [
+    ".env.example",
+    ".gitignore",
+    "ADR.md",
+    "README.md",
+    "TRACEABILITY.md",
+    "backend/src/app.js",
+    "backend/src/config/index.js",
+    "backend/src/database/migrations/003_phase2_foundation.sql",
+    "backend/src/database/migrations/004_phase2_profile_indexes.sql",
+    "backend/src/database/seed.js",
+    "backend/src/domain/rbac/index.js",
+    "backend/src/middleware/guest.js",
+    "backend/src/routes/mobile.js",
+    "backend/src/server.js",
+    "backend/src/services/phase2.js",
+    "backend/src/services/readiness.js",
+    "backend/src/services/state.js",
+    "backend/src/workers/worker.js",
+    "docker-compose.yml",
+    "docs/PHASE1_FOUNDATION.md",
+    "infrastructure/mediamtx.Dockerfile",
+    "infrastructure/mediamtx.yml",
+    "infrastructure/minio-source.Dockerfile",
+    "infrastructure/minio.Dockerfile",
+    "infrastructure/vendor/README.md",
+    "scripts/test-integration.sh",
+    "tests/mobile.integration.test.js",
+    "tests/phase1.infrastructure.test.js",
+    "tests/phase1.integration.test.js",
+    "tests/reports/README.md",
+    "tests/reports/phase1-backend.json",
+    "tests/selenium/test_grid_infrastructure.py",
+    "tests/setup.js",
+    "infrastructure/vendor/MINIO-LICENSE",
+    "infrastructure/vendor/minio-linux-amd64.gz",
+    "scripts/verify-phase1.js",
+    "tests/reports/phase1-infrastructure.json",
+    "tests/storage/test_minio.py"
+  ]
+}

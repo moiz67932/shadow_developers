@@ -16,7 +16,7 @@ The API, PostgreSQL and Redis are healthy; the worker is running and an `order.p
 
 The existing Day 1 audit routes are implemented. Phase 1 adds account-derived sessions, guest-write guards, relational Phase II foundations and baseline seeds. Phase II business endpoint handlers are not implemented yet. See [Phase 1 scope and verification](docs/PHASE1_FOUNDATION.md) and [the Day 1 endpoint status table](docs/BACKEND_STATUS.md).
 
-MinIO is a required default service. Its Dockerfile builds the exact historical upstream release from a pinned source commit because the prescribed image and binary are unavailable. Cold-build timing and actual service readiness must be verified; cached images are not proof of reproducibility. Selenium is pinned to 4.25.0 with two Chrome nodes and one Firefox node.
+MinIO is a required default service. Its runtime Dockerfile verifies and unpacks a bundled executable built from the exact historical upstream source commit because the prescribed image and binary are unavailable. The source-build recipe and AGPL license are included. Clean image-pull/start timing must still be verified; cached images are not proof of reproducibility. Selenium is pinned to 4.25.0 with two Chrome nodes and one Firefox node.
 
 ## Tests and coverage
 

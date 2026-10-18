@@ -32,7 +32,11 @@ The internal control API is not published on a host port.
 The historical MinIO image could not be pulled and the binary endpoint returned
 HTTP 410. The Dockerfile builds the exact official historical release source at
 commit `03e996320ebb887112fb2a15c6f27936e5f124a0`; no substitute release is used.
-This adds a source-build/download cost that must be included in clean-build timing.
+The generated executable is bundled compressed with its AGPL license and SHA256;
+the default runtime build unpacks it without downloading a binary or compiling Go.
+The full source-build recipe remains in `infrastructure/minio-source.Dockerfile`.
+This adds approximately 36 MiB to the repository; clean image-pull/start timing
+still requires verification independently of a warm local build.
 
 Compose forwards both salts, requires dependency readiness, and enables durable
 Redis AOF for new/recreated Redis containers. Existing Redis must be migrated with
@@ -44,6 +48,28 @@ environment. Do not paste it into reports. Test-only credentials are not officia
 signature evidence. Appium, media ingest/composition and Phase 2 audit handlers
 are not implemented by this foundation.
 
+## Phase 1 acceptance evidence
+
+- 68 backend tests passed, zero failed/skipped, including all 56 pre-existing
+  tests and database-backed concurrency/mobile journeys. One old fixture-list
+  assertion was extended to include the newly required Day 2 seed.
+- Three simultaneous real Chrome/Chrome/Firefox sessions reached the corrected
+  isolated API; authenticated S3 create/put/get/delete passed.
+- Strict dependency readiness returned 200 on the isolated corrected API; its
+  guest chat/checkout/events probes returned 403 GUEST_WRITE_FORBIDDEN.
+- The rebuilt worker's heartbeat passed in an isolated Redis/test-database setup.
+- Migrations 003 and 004 were applied to test and application databases without
+  resetting the application. Two existing orders and pre-existing match/roster
+  hashes were preserved.
+- The existing production API/worker were left operational; updated production
+  rollout remains pending the real DAY2_SALT. Existing Redis persistence changes
+  must preserve current queue data during rollout. Cold full-stack startup on a
+  clean machine is not certified.
+- Another process committed/pushed during execution. This agent did neither.
+  Public HEAD 10d3dbd at 12:35:44 PKT does not include all runtime artifact files;
+  the replacement MinIO Dockerfile/binary/license and final evidence must be
+  included in the next approved checkpoint.
+
 ## Verification
 
 Run `sh scripts/test-integration.sh`. Both the script and Jest setup refuse a
@@ -53,6 +79,10 @@ rewriting coverage declarations. Full dependency health is tested separately.
 Run `python3 -m unittest discover -s tests/selenium -p test_grid_infrastructure.py`
 for three simultaneous real Chrome/Chrome/Firefox sessions against API health.
 This is infrastructure verification, not guest-player acceptance.
+
+Run `MINIO_ENDPOINT_URL=http://<reachable-minio>:9000 python3 -m unittest discover
+-s tests/storage -p test_minio.py` for an authenticated S3 create/put/get/delete
+round trip. It creates and cleans an isolated temporary bucket.
 
 ## Accepted scope for subsequent phases
 

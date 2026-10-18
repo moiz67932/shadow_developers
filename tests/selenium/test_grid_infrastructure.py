@@ -10,6 +10,7 @@ import unittest
 import urllib.request
 
 GRID = os.environ.get("SELENIUM_URL", "http://localhost:4444").rstrip("/")
+API_HEALTH = os.environ.get("GRID_API_HEALTH_URL", "http://api:8080/health")
 
 def call(path, payload=None, method=None):
     request = urllib.request.Request(GRID + path,
@@ -28,7 +29,7 @@ def browser_smoke(browser, barrier):
     sid = session["sessionId"]
     try:
         barrier.wait(timeout=35)
-        call(f"/session/{sid}/url", {"url": "http://api:8080/health"})
+        call(f"/session/{sid}/url", {"url": API_HEALTH})
         return call(f"/session/{sid}/execute/sync", {"script": "return document.body.textContent", "args": []})
     finally:
         call(f"/session/{sid}", method="DELETE")

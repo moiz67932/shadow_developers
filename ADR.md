@@ -18,7 +18,8 @@
 - Read salts only from the environment. Use a stable configured JWT secret, with a
   domain-separated environment-salt fallback for restart continuity.
 - Preserve the historical MinIO release by building its verified official source
-  commit when both image and binary distribution are unavailable. Cold-build time
-  remains an explicit deployment risk.
+  commit when both image and binary distribution are unavailable. Bundle the
+  compressed, checksum-verified executable and AGPL license so default startup
+  does not repeat the multi-minute source build. Keep the source recipe available.
 - Use prescribed Selenium 4.25.0 and MediaMTX 1.9.1. Infrastructure readiness does
   not prove media ingest/composition or guest UI behavior.
