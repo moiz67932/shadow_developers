@@ -1,0 +1,16 @@
+{
+  "measured_at": "2026-10-18T08:35:05.815Z",
+  "actualRtmpPublished": true,
+  "hlsManifest": true,
+  "hlsSegmentBytes": 27608,
+  "vod": {
+    "vodStoredAndRetrieved": true,
+    "bytes": 395031
+  },
+  "layouts": {
+    "grid_2": true,
+    "grid_4": true,
+    "spotlight": true
+  },
+  "officialKeyLifecycleAtMediaBoundary": "not verified: official DAY2_SALT required"
+}

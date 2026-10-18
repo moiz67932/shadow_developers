@@ -100,6 +100,8 @@ services:
       MEDIA_METRICS_URL: http://mediamtx:9998/metrics
       MINIO_HEALTH_URL: http://minio:9000/minio/health/ready
       MINIO_ENDPOINT: minio
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-nasconminio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-change-this-minio-password}
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_healthy }

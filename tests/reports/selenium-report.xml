@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="Guest Grid" tests="3" failures="0"><testcase classname="chrome" name="landing" /><testcase classname="chrome" name="write" /><testcase classname="firefox" name="score" /></testsuite>

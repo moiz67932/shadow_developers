@@ -1,0 +1,17 @@
+[
+  {
+    "browser": "chrome",
+    "scenario": "landing",
+    "passed": true
+  },
+  {
+    "browser": "chrome",
+    "scenario": "write",
+    "passed": true
+  },
+  {
+    "browser": "firefox",
+    "scenario": "score",
+    "passed": true
+  }
+]

@@ -1,7 +1,7 @@
 const {WebSocketServer,WebSocket}=require('ws');
 const connections=new Set(),subscribers=new Map();
 function payload(view){return {type:'score_update',...view,score:view,timestamp_ms:Date.now()};}
-function publish(view){const message=JSON.stringify(payload(view));for(const client of connections)if(client.match_id===view.match_id&&client.readyState===WebSocket.OPEN)client.send(message);for(const callback of subscribers.get(view.match_id)??[])callback(message);}
+function publish(view){require('./qr-cache').invalidate();const message=JSON.stringify(payload(view));for(const client of connections)if(client.match_id===view.match_id&&client.readyState===WebSocket.OPEN)client.send(message);for(const callback of subscribers.get(view.match_id)??[])callback(message);}
 function subscribe(match_id,callback){if(!subscribers.has(match_id))subscribers.set(match_id,new Set());subscribers.get(match_id).add(callback);return ()=>{const listeners=subscribers.get(match_id);listeners?.delete(callback);if(!listeners?.size)subscribers.delete(match_id);};}
 function attach(server){
   const wss=new WebSocketServer({noServer:true,maxPayload:1024*1024});
