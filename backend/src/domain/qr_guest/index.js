@@ -17,7 +17,7 @@ async function entity(c,s,entity_id){
   if(session)return {type:'costream',status:session.status,route:'/web/costream/'+entity_id};
   fail(404,'QR_NOT_FOUND','Entity has no QR mapping.');
 }
-async function resolve(entity_id,inspect=false,userAgent=''){
+async function resolve(entity_id,inspect=false,userAgent='',signedResponse=true){
   parse(id,entity_id);return tx(null,async c=>{
     const e=await entity(c,await getState(c),entity_id);
     const short_code=e.type.slice(0,1)+'-'+crypto.createHash('sha256').update(entity_id).digest('hex').slice(0,20);
@@ -29,10 +29,10 @@ async function resolve(entity_id,inspect=false,userAgent=''){
       await c.query("INSERT INTO day2_qr_scan_buckets(entity_id,utc_bucket,device_family,scans) VALUES($1,date_trunc('hour',now()),$2,1) ON CONFLICT(entity_id,utc_bucket,device_family) DO UPDATE SET scans=day2_qr_scan_buckets.scans+1",[entity_id,/mobile|android|iphone|ipad/i.test(userAgent)?'mobile':'desktop']);
     }
     const short_url=origin+'/q/'+row.short_code,target_route=e.route;
-    return {entity_id,entity_type:e.type,entity_status:e.status,short_url,target_route,deep_link_uri:'nascon://entity/'+entity_id,scan_count:Number(row.scan_count),export_formats:Object.fromEntries(['svg','png','pdf'].map(fmt=>[fmt,`${origin}/audit/v1/qr/${entity_id}/export.${fmt}`])),signature:signDay2(entity_id,{entity_id,short_url,target_route})};
+    return {entity_id,entity_type:e.type,entity_status:e.status,short_url,target_route,deep_link_uri:'nascon://entity/'+entity_id,scan_count:Number(row.scan_count),export_formats:Object.fromEntries(['svg','png','pdf'].map(fmt=>[fmt,`${origin}/audit/v1/qr/${entity_id}/export.${fmt}`])),signature:signedResponse?signDay2(entity_id,{entity_id,short_url,target_route}):undefined};
   });
 }
-async function redirect(code,ua){const row=(await pool.query('SELECT entity_id FROM day2_qr_links WHERE short_code=$1',[code])).rows[0];if(!row)fail(404,'QR_NOT_FOUND','Short code not found.');return resolve(row.entity_id,false,ua);}
+async function redirect(code,ua){const row=(await pool.query('SELECT entity_id FROM day2_qr_links WHERE short_code=$1',[code])).rows[0];if(!row)fail(404,'QR_NOT_FOUND','Short code not found.');require('../../services/qr-cache').invalidate();const result=await resolve(row.entity_id,false,ua,false);require('../../services/qr-cache').invalidate();return result;}
 async function exportQR(entity_id,format){if(!['svg','png','pdf'].includes(format))fail(400,'VALIDATION_ERROR','Unsupported export.',{fields:['format']});const meta=await resolve(entity_id,true);
   if(format==='svg')return {type:'image/svg+xml',data:await QRCode.toString(meta.short_url,{type:'svg',errorCorrectionLevel:'M'})};
   const png=await QRCode.toBuffer(meta.short_url,{type:'png',width:256,margin:4});if(format==='png')return {type:'image/png',data:png};

@@ -1,0 +1,7 @@
+const crypto=require('crypto'),pool=require('../database/pool');
+async function enqueue(client,state,topic,payload,tenant_id){
+ const users=(state.users??[]).filter(u=>!u.anonymized&&(!tenant_id||u.tenant_id===tenant_id));
+ for(const user of users)await client.query('INSERT INTO day2_notifications(notification_id,recipient_id,topic,payload) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',[topic+'-'+(payload.event_id??crypto.randomUUID())+'-'+user.user_id,user.user_id,topic,payload]);
+}
+async function retryFailed(){const c=await pool.connect();try{await c.query('BEGIN');const rows=(await c.query("SELECT * FROM day2_notifications WHERE status='pending' AND payload->>'simulate_dlq'='true' AND next_attempt_at<=now() ORDER BY sequence LIMIT 20 FOR UPDATE SKIP LOCKED")).rows;for(const row of rows){const attempts=row.attempts+1;if(attempts>=3){await c.query("UPDATE day2_notifications SET attempts=3,status='dead' WHERE notification_id=$1",[row.notification_id]);await c.query('INSERT INTO day2_notification_dlq(notification_id,payload) VALUES($1,$2) ON CONFLICT DO NOTHING',[row.notification_id,{...row.payload,notification_id:row.notification_id,attempts:3}]);}else await c.query("UPDATE day2_notifications SET attempts=$2,next_attempt_at=now()+($3::int*interval '1 millisecond') WHERE notification_id=$1",[row.notification_id,attempts,100*2**(attempts-1)]);}await c.query('COMMIT');return rows.length;}catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}}
+module.exports={enqueue,retryFailed};

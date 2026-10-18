@@ -45,7 +45,7 @@ class Day2LiveActivity : Activity() {
         root.addView(score)
         video = VideoView(this).apply { contentDescription = "guest-video-player"; setMediaController(MediaController(this@Day2LiveActivity)) }
         root.addView(video, LinearLayout.LayoutParams(-1, 640))
-        root.addView(Button(this).apply { text = "Open full guest arena"; setOnClickListener { val route = if (entity.startsWith("cs-")) "/web/costream/$entity" else if(entity.startsWith("match-")) "/web/matches/$entity/live" else "/web/players/$entity"; startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(server + route))) } })
+        root.addView(Button(this).apply { text = "Open full guest arena"; setOnClickListener { val route = if (entity.startsWith("cs-")) "/web/costream/$entity" else if(entity.startsWith("match-")) "/web/matches/$entity/live" else if(entity.startsWith("club-")) "/web/clubs/$entity" else "/web/players/$entity"; startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(server + route))) } })
         root.addView(Button(this).apply { text = "Enable live notifications"; setOnClickListener { if(Build.VERSION.SDK_INT >= 33) requestPermissions(arrayOf("android.permission.POST_NOTIFICATIONS"), 2026) } })
         io.execute {
             try {
@@ -81,5 +81,5 @@ class Day2LiveActivity : Activity() {
             }
         }
     }
-    override fun onDestroy() { generation++; connection?.disconnect(); video.stopPlayback(); io.shutdownNow(); super.onDestroy() }
+    override fun onDestroy() { generation++; connection?.disconnect(); if(::video.isInitialized) video.stopPlayback(); io.shutdownNow(); super.onDestroy() }
 }

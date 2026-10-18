@@ -5,7 +5,7 @@ route('post','/reset',async(req,res)=>{const b=parse(z.object({seed:int.optional
 route('post','/sports',async(req,res)=>res.status(201).json(await transaction(s=>createSport(s,req.body))));
 route('post','/fixtures',(req,res)=>res.json(fixtures(req.body)));
 route('post','/leagues',async(req,res)=>res.status(201).json(await transaction(s=>createLeague(s,req.body))));
-route('post','/events',async(req,res)=>{const {r,view}=await transaction(s=>{const r=append(s,req.body);return {r,view:project(s,req.body.match_id)};});if(r.status===201)require('../services/realtime').publish(view);res.status(r.status).json(r.body);});
+route('post','/events',async(req,res)=>{const {r,view}=await transaction(async(s,c)=>{const r=append(s,req.body),view=project(s,req.body.match_id);if(r.status===201)await require('../services/notifications').enqueue(c,s,'score.updated',{event_id:req.body.event_id,score:view},s.leagues[view.league_id]?.tenant_id);return {r,view};});if(r.status===201)require('../services/realtime').publish(view);res.status(r.status).json(r.body);});
 route('get','/score/:id',async(req,res)=>res.json(project(await getState(),req.params.id)));
 route('get','/standings/:id',async(req,res)=>res.json(standings(await getState(),req.params.id)));
 route('post','/roster/setup',async(req,res)=>res.status(201).json(await transaction(s=>roster.setup(s,req.body))));

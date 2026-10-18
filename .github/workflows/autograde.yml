@@ -1,0 +1,51 @@
+name: NaSCon Day 2 verification
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  contracts-grid-load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      DAY1_SALT: ${{ secrets.DAY1_SALT }}
+      DAY2_SALT: ${{ secrets.DAY2_SALT }}
+      DAY1_BASE_SHA: ${{ vars.DAY1_BASE_SHA }}
+      POSTGRES_DB: nascon_test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify private credentials and official ancestry
+        run: |
+          test -n "$DAY1_SALT"
+          test -n "$DAY2_SALT"
+          test -n "$DAY1_BASE_SHA"
+          git merge-base --is-ancestor "$DAY1_BASE_SHA" HEAD
+      - run: npm --prefix backend ci
+      - name: Start complete stack
+        run: docker compose up -d --build
+      - name: Wait for ready API and three browser nodes
+        run: |
+          timeout 120 bash -c 'until curl -fsS http://localhost:8080/health; do sleep 2; done'
+          python3 -m unittest discover -s tests/selenium -p test_grid_infrastructure.py
+      - name: Isolated backend contracts and measured module coverage
+        run: |
+          sh scripts/test-integration.sh --runTestsByPath ../tests/day2.contract.test.js ../tests/day2.realtime.test.js ../tests/day2.media-control.test.js ../tests/day3.web.test.js --coverage
+          node scripts/coverage-day2.js
+      - name: Guest Chrome and Firefox journeys
+        run: python3 -m unittest discover -s tests/selenium -p test_guest_grid.py
+      - name: Published 550-user workload
+        run: docker run --rm --user "$(id -u):$(id -g)" --network host -v "$PWD/tests:/tests" grafana/k6:0.54.0 run --summary-export=/tests/reports/k6-summary.json /tests/k6_load.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verified-test-reports
+          path: |
+            tests/reports/
+            COVERAGE_DAY2.json
+      - if: always()
+        run: docker compose logs --tail 40 api worker

@@ -10,7 +10,7 @@ def call(path,payload=None,method=None):
 @unittest.skipUnless(os.environ.get('MATCHING_APK_INSTALLED')=='1','Matching Day 2 APK/device not verified; no build is performed')
 class MobileDeepLinks(unittest.TestCase):
     def test_match_and_stream_external_intents(self):
-        caps={'platformName':'Android','appium:automationName':'UiAutomator2','appium:deviceName':os.environ.get('ANDROID_DEVICE','Infinix'),'appium:noReset':True,'appium:appPackage':'com.example.nasconsports','appium:appActivity':'.Day2LiveActivity'}
+        caps={'platformName':'Android','appium:automationName':'UiAutomator2','appium:deviceName':os.environ.get('ANDROID_DEVICE','Infinix'),'appium:noReset':True,'appium:appPackage':'com.example.nasconsports','appium:appActivity':'.MainActivity'}
         sid=call('/session',{'capabilities':{'alwaysMatch':caps}})['sessionId']
         try:
             for uri in ['nascon://entity/match-m1','nascon://stream/cs-session-101']:
