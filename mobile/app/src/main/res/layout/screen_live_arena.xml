@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <FrameLayout android:layout_width="match_parent" android:layout_height="210dp" android:background="@drawable/bg_card_feature" android:clipToOutline="true">
+        <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/vod_arena_cover" android:scaleType="centerCrop" android:importantForAccessibility="no" />
+        <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_video_scrim" />
+        <VideoView android:id="@+id/live_video" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_gravity="center" android:visibility="gone" android:contentDescription="Live arena player" />
+        <TextView android:id="@+id/live_signal" style="@style/Arena.Label" android:layout_width="wrap_content" android:layout_margin="12dp" android:background="@drawable/bg_status" android:padding="8dp" android:text="CONNECTING TO ARENA" />
+        <TextView android:id="@+id/live_waiting" style="@style/Arena.Body" android:layout_gravity="center" android:gravity="center" android:padding="24dp" android:textColor="@color/text_primary" android:text="Waiting for the broadcaster" />
+    </FrameLayout>
+    <LinearLayout android:id="@+id/live_score_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" />
+    <LinearLayout android:id="@+id/live_merch" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" />
+    <com.google.android.material.tabs.TabLayout android:id="@+id/live_tabs" android:layout_width="match_parent" android:layout_height="48dp" android:background="@color/background" />
+    <LinearLayout android:id="@+id/live_chat_panel" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp" android:background="@drawable/bg_card" android:layout_marginTop="12dp">
+        <TextView android:id="@+id/live_chat_status" style="@style/Arena.Body" android:text="Loading fan chat…" android:accessibilityLiveRegion="polite" />
+        <LinearLayout android:id="@+id/live_messages" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+        <com.google.android.material.textfield.TextInputLayout style="@style/Arena.Input" android:hint="Cheer for your team…">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/live_message" style="@style/Arena.Edit" android:maxLength="2000" android:inputType="textCapSentences" android:imeOptions="actionSend" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.button.MaterialButton android:id="@+id/live_send" style="@style/Arena.Button" android:text="Send message →" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/live_stats_panel" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone" android:layout_marginTop="12dp" />
+    <LinearLayout android:id="@+id/live_actions" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="16dp" />
+</LinearLayout>

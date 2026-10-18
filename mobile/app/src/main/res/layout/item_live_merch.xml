@@ -1,0 +1,9 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:background="@drawable/bg_card" android:padding="12dp">
+    <ImageView android:layout_width="58dp" android:layout_height="72dp" android:src="@drawable/merch_thunder" android:scaleType="centerCrop" android:contentDescription="Official merchandise artwork" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:paddingHorizontal="10dp">
+        <TextView style="@style/Arena.Label" android:text="MATCHDAY MERCH" android:textSize="9sp" />
+        <TextView android:id="@+id/live_merch_name" style="@style/Arena.Body" android:textColor="@color/text_primary" android:layout_marginBottom="4dp" />
+        <TextView android:id="@+id/live_merch_price" style="@style/Arena.Body" android:textColor="@color/cyan" android:layout_marginBottom="0dp" />
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButton android:id="@+id/live_merch_bag" style="@style/Arena.Secondary" android:layout_width="wrap_content" android:text="Bag" android:contentDescription="Choose merchandise size and quantity" />
+</LinearLayout>
