@@ -257,7 +257,7 @@ fun MainActivity.nativeAthleteProfile(id: String) {
         inlineActions(overview, listOf("Watch live" to { arenaScreen(id) }, "Share athlete QR" to { qrExportScreen(id) }))
         val matches = (profile.optJSONArray("upcoming") ?: JSONArray()).objects()
         if (matches.isEmpty()) text("No upcoming fixtures.", 13f, parent = fixtures)
-        matches.forEachIndexed { index, match -> fixtures.addView(fixtureCard(match, index, fixtures), LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) }) }
+        matches.forEachIndexed { index, match -> fixtureCard(match, index, fixtures) }
         val vods = (profile.optJSONArray("vods") ?: JSONArray()).objects()
         if (vods.isEmpty()) text("No recordings yet. Archived broadcasts will appear here.", 13f, parent = recordings)
         for (vod in vods) {

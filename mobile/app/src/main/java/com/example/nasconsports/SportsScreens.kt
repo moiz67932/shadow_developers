@@ -45,13 +45,16 @@ fun MainActivity.fixtureCard(f:JSONObject,index:Int=0,parent:LinearLayout=conten
 }
 
 private fun MainActivity.filterRail(){
-    val scroll=HorizontalScrollView(this).apply{isHorizontalScrollBarEnabled=false}
-    val row=LinearLayout(this).apply{orientation=LinearLayout.HORIZONTAL;setPadding(0,dp(2),0,dp(10))}
-    scroll.addView(row)
-    listOf("All Leagues","Premier Cup","Varsity Cup","Division 1").forEachIndexed{i,label->
-        TextView(this).apply{text=label;textSize=12f;gravity=Gravity.CENTER;setPadding(dp(16),0,dp(16),0);setTextColor(if(i==0)Color.rgb(7,11,19)else Color.rgb(195,198,215));typeface=ResourcesCompat.getFont(this@filterRail,R.font.space_grotesk);setTypeface(typeface,Typeface.BOLD);background=android.graphics.drawable.GradientDrawable().apply{setColor(if(i==0)Color.rgb(0,210,255)else Color.rgb(22,27,41));cornerRadius=dp(999).toFloat();setStroke(dp(1),if(i==0)Color.rgb(56,189,248)else Color.rgb(51,65,85))}}.also{row.addView(it,LinearLayout.LayoutParams(-2,dp(38)).apply{rightMargin=dp(8)})}
+    val rail=HorizontalScrollView(this).apply{isHorizontalScrollBarEnabled=false}
+    val row=LinearLayout(this).apply{orientation=LinearLayout.HORIZONTAL}
+    rail.addView(row)
+    for(league in (data.optJSONArray("leagues")?:JSONArray()).objects()){
+        val chip=com.google.android.material.chip.Chip(this).apply{
+            text=league.optString("name",league.optString("league_id"));isCheckable=true;isChecked=league.optString("league_id")==selectedLeague;minHeight=dp(48)
+            setOnClickListener{selectedLeague=league.getString("league_id");fixturesScreen()}
+        };row.addView(chip)
     }
-    content.addView(scroll)
+    content.addView(rail)
 }
 
 private fun MainActivity.matchDayRail(fixtures:List<JSONObject>){
