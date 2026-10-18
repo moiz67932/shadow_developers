@@ -3,32 +3,32 @@
 ## Start
 
 ```sh
-DAY1_SALT=your-team-salt docker compose up -d --build
+DAY1_SALT=your-team-salt DAY2_SALT=your-day2-salt docker compose up -d --build
 curl http://localhost:8080/health
 ./run_tests.sh
 ```
 
-The API is on port 8080. Copy `.env.example` to `.env` only for local overrides; never commit `DAY1_SALT`.
+The API is on port 8080. Supply both organizer salts using environment variables or an ignored `.env`; never commit either credential. Strict readiness checks PostgreSQL, Redis, baseline data, MediaMTX and MinIO.
 
 ## Current verification
 
 The API, PostgreSQL and Redis are healthy; the worker is running and an `order.paid` event was observed being consumed. Migrations and seeding run automatically. The Node 20 runtime image builds with `npm ci --omit=dev`.
 
-All mandatory audit route patterns are implemented. **52 tests in 6 suites pass**, including actual PostgreSQL concurrency, PDF text extraction and JWT boundaries. See [the endpoint status table](docs/BACKEND_STATUS.md) for precise scope and known gaps. This is not a claim of complete Part I compliance.
+The existing Day 1 audit routes are implemented. Phase 1 adds account-derived sessions, guest-write guards, relational Phase II foundations and baseline seeds. Phase II business endpoint handlers are not implemented yet. See [Phase 1 scope and verification](docs/PHASE1_FOUNDATION.md) and [the Day 1 endpoint status table](docs/BACKEND_STATUS.md).
 
-MinIO is not running: Docker Hub, Quay and official binary retrieval failed in earlier checks. The `object-storage` profile currently contains an unavailable binary URL and does not build. An organizer-approved artifact is needed; the complete mandatory object-store startup requirement remains unresolved.
+MinIO is a required default service. Its Dockerfile builds the exact historical upstream release from a pinned source commit because the prescribed image and binary are unavailable. Cold-build timing and actual service readiness must be verified; cached images are not proof of reproducibility. Selenium is pinned to 4.25.0 with two Chrome nodes and one Firefox node.
 
 ## Tests and coverage
 
-Install development dependencies once with `cd backend && npm ci`, then run `./run_tests.sh` from the repository root. The script needs host Node/npm, Docker access, and the running default PostgreSQL service. It creates/reuses a separate database named `nascon_test`, runs unit and HTTP integration tests, and regenerates `COVERAGE.json` from Jest measurements. For custom PostgreSQL credentials, supply a reachable `DATABASE_URL` ending in `/nascon_test`. Never point the suite at application data.
+Install development dependencies once with `cd backend && npm ci`, then run `sh scripts/test-integration.sh` from the repository root. It creates/reuses only `nascon_test` and runs unit/HTTP integration tests without rewriting coverage declarations. Jest also rejects any other integration database name. For custom PostgreSQL credentials, supply a reachable `DATABASE_URL` ending in `/nascon_test`. `./run_tests.sh` additionally regenerates historical Day 1 coverage. Never point tests at application data.
 
-The current measured line percentage is 100 for each required domain; overall domain branch coverage is 89.47%. Dense source lines make line coverage a weaker signal than the branch and behavior tests. Generated detailed reports are in `backend/coverage/` and are not committed.
+Existing `COVERAGE.json` and `backend/coverage/` are historical Day 1 measurements, not fresh Phase II evidence. Phase II coverage will be generated from its implemented modules. Dense source lines make line coverage a weaker signal than branch and behavior tests.
 
 ## API and configuration
 
 The full audit contract is in the repository's official Part I PDF; route verification is listed in `docs/BACKEND_STATUS.md`. Audit routes are intentionally unauthenticated except the seven RBAC probes. All errors contain `error.code`, `error.message` and object `error.details`.
 
-Use `POST /api/v1/login` with email/password for a signed JWT, then `GET /api/v1/bootstrap` with `Authorization: Bearer <token>` for tenant-filtered data. `/api/v1/*` is limited to 100 requests per rolling 10 seconds; audit and health routes are exempt. Set `JWT_SECRET` for sessions that survive API restart; otherwise the API generates a process-local random signing key. `DAY1_SALT` is required by the server and Compose, is never returned by an API, and must not be committed.
+Use `POST /api/v1/login` with email/password for an account-derived JWT, then `GET /api/v1/bootstrap` with `Authorization: Bearer <token>` for tenant-filtered data. `/api/v1/*` is limited to 100 requests per rolling 10 seconds; audit and health routes are exempt. Set a stable `JWT_SECRET`; the fallback is domain-separated from environment `DAY1_SALT` and survives restart. Fixed Day 1 probe tokens cannot authenticate production sessions. Existing role-only sessions require re-login after upgrading.
 
 ## Demo accounts
 
@@ -42,7 +42,7 @@ Use `POST /api/v1/login` with email/password for a signed JWT, then `GET /api/v1
 
 ## Android
 
-The native Kotlin/XML package is `com.example.nasconsports`. Use `http://10.0.2.2:8080` in an emulator, or the laptop LAN address on a phone. The release APK has not yet been built.
+The native Kotlin/XML package is `com.example.nasconsports`. Use `http://10.0.2.2:8080` in an emulator, or the laptop LAN address on a phone. The tracked release APK is the Day 1 artifact; it does not demonstrate Phase II mobile features.
 
 Follow [the Android handoff](docs/ANDROID_HANDOFF.md) for API bodies, Room queue format, permissions, demo-data preparation and build steps. WebSocket/SSE transport remains missing; score polling is available. Full protected mobile mutation endpoints, venue conflict tools, broad store lifecycle and deferred roster lifecycle are remaining work detailed in the status document.
 

@@ -1,5 +1,20 @@
 # Traceability matrix
 
+## Day 2 Phase 1 foundation (18 October)
+
+| Requirement | Source | Verification / limit |
+|---|---|---|
+| FR-5.1 inherited account/tenant/club authorization | `backend/src/domain/rbac/index.js`, `routes/mobile.js`, `services/phase2.js` | `tests/phase1.integration.test.js`: account identity, independent same-role accounts, tenant/club/league denials, stable restart key; fixed Day 1 probe matrix preserved |
+| FR-4.3 guest write boundary | `backend/src/middleware/guest.js`, `app.js` | Direct guest chat/checkout/events/roster/offline/follow probes return exact 403 without writes |
+| §5.2 seed/reset continuity | `services/state.js`, `services/phase2.js`, `database/seed.js` | Exact Day 1 reset envelope plus required Day 2 match/player/QR/token/cart seeds; additive startup preserves inventory/cart/events |
+| §5 persistence foundations | `003_phase2_foundation.sql`, `004_phase2_profile_indexes.sql` | Migration repeatability and active-key uniqueness tested; business endpoint handlers remain Phase 2 |
+| §6.1/§6.2 Grid/media infrastructure | `docker-compose.yml`, `infrastructure/mediamtx.*`, `infrastructure/minio.Dockerfile` | Compose assertions and real three-browser infrastructure smoke; no guest-player/media-flow claim |
+| NFR-7 inherited reproducibility | Compose/Dockerfiles, `services/readiness.js` | Required services have health checks; strict startup depends on real environment salts; cold MinIO build and full startup require measurement |
+| Test data safety | `tests/setup.js`, `scripts/test-integration.sh` | Integration tests refuse any database name other than `nascon_test` |
+
+Phase ownership and explicit incomplete functionality are recorded in
+`docs/PHASE1_FOUNDATION.md`. Historical rows below describe Day 1 evidence.
+
 Paths below are relative to `backend/src/` except tests and root infrastructure. **Passing tests are local evidence, not certification of hidden vectors.**
 
 | ID | Implementation | Automated evidence | Status |

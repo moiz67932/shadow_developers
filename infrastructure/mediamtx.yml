@@ -1,0 +1,31 @@
+logLevel: warn
+api: yes
+apiAddress: :9997
+metrics: yes
+metricsAddress: :9998
+rtmp: yes
+rtmpAddress: :1935
+rtsp: yes
+rtspAddress: :8554
+hls: yes
+hlsAddress: :8888
+hlsAllowOrigin: '*'
+hlsVariant: lowLatency
+webrtc: yes
+webrtcAddress: :8889
+webrtcAllowOrigin: '*'
+webrtcLocalUDPAddress: :8189
+# Phase 2 wires publish authorization into the stream-key lifecycle.
+# Until then, deny all external publishing rather than accepting unsigned keys.
+authMethod: internal
+authInternalUsers:
+- user: any
+  pass:
+  ips: []
+  permissions:
+  - action: read
+  - action: playback
+  - action: api
+  - action: metrics
+paths:
+  all_others:

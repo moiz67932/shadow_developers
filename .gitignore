@@ -12,3 +12,4 @@ mobile/**/build/
 *.jks
 !mobile/release/app-release.apk
 mobile/.kotlin/
+__pycache__/

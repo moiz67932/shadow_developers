@@ -1,1 +1,15 @@
-<resources><style name="Base.Theme.NaSConSports" parent="Theme.Material3.Dark.NoActionBar"><item name="colorPrimary">@color/blue</item><item name="colorSecondary">@color/navy</item><item name="android:fontFamily">sans</item><item name="android:windowLightStatusBar">false</item><item name="android:statusBarColor">@color/navy</item><item name="android:navigationBarColor">@color/navy</item><item name="android:windowActionModeOverlay">true</item></style><style name="Theme.NaSConSports" parent="Base.Theme.NaSConSports" /></resources>
+<resources>
+    <style name="Base.Theme.NaSConSports" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorSecondary">@color/cyan</item>
+        <item name="colorSurface">@color/surface_low</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:fontFamily">@font/plus_jakarta_sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/base_void</item>
+        <item name="android:navigationBarColor">@color/base_void</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:colorAccent">@color/cyan</item>
+    </style>
+    <style name="Theme.NaSConSports" parent="Base.Theme.NaSConSports" />
+</resources>
