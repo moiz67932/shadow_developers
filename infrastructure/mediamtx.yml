@@ -15,9 +15,12 @@ webrtc: yes
 webrtcAddress: :8889
 webrtcAllowOrigin: '*'
 webrtcLocalUDPAddress: :8189
-# Phase 2 wires publish authorization into the stream-key lifecycle.
-# Until then, deny all external publishing rather than accepting unsigned keys.
-authMethod: internal
+authMethod: http
+authHTTPAddress: http://api:8080/internal/media/auth
+authHTTPExclude:
+- action: api
+- action: metrics
+- action: pprof
 authInternalUsers:
 - user: any
   pass:

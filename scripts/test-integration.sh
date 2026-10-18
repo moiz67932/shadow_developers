@@ -18,5 +18,14 @@ export DAY2_SALT="${DAY2_SALT:-integration-test-only}"
 export JWT_SECRET="${JWT_SECRET:-integration-test-only}"
 export RUN_INTEGRATION=1
 export STRICT_READINESS=0
+if [ -z "${TEST_REDIS_URL:-}" ]; then
+  if docker inspect nascon-phase1-redis-test >/dev/null 2>&1; then
+    docker start nascon-phase1-redis-test >/dev/null
+  else
+    docker run -d --name nascon-phase1-redis-test redis:7-alpine >/dev/null
+  fi
+  test_redis_ip=$(docker inspect nascon-phase1-redis-test --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
+  export TEST_REDIS_URL="redis://$test_redis_ip:6379"
+fi
 # No coverage-file generation or competition data reset.
 npm --prefix backend test -- --cache=false --silent "$@"

@@ -96,6 +96,8 @@ services:
       DAY2_SALT: ${DAY2_SALT:-}
       STRICT_READINESS: "1"
       MEDIA_HEALTH_URL: http://mediamtx:9997/v3/paths/list
+      MEDIA_API_URL: http://mediamtx:9997
+      MEDIA_METRICS_URL: http://mediamtx:9998/metrics
       MINIO_HEALTH_URL: http://minio:9000/minio/health/ready
       MINIO_ENDPOINT: minio
     depends_on:

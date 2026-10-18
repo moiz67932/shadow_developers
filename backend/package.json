@@ -18,8 +18,9 @@
     "express": "^4.21.2",
     "ioredis": "^5.4.2",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.13.1",
     "pdfkit": "^0.16.0",
+    "pg": "^8.13.1",
+    "qrcode": "1.5.4",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -28,10 +29,20 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "roots": ["<rootDir>/../tests"],
-    "setupFiles": ["<rootDir>/../tests/setup.js"],
-    "collectCoverageFrom": ["src/domain/**/*.js"],
+    "roots": [
+      "<rootDir>/../tests"
+    ],
+    "setupFiles": [
+      "<rootDir>/../tests/setup.js"
+    ],
+    "collectCoverageFrom": [
+      "src/domain/**/*.js"
+    ],
     "coverageDirectory": "coverage",
-    "coverageReporters": ["text", "json-summary", "json"]
+    "coverageReporters": [
+      "text",
+      "json-summary",
+      "json"
+    ]
   }
 }
