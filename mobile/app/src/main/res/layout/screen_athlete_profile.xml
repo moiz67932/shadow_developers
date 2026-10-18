@@ -1,0 +1,10 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <include layout="@layout/view_arena_hero" />
+    <TextView android:id="@+id/athlete_name" style="@style/Arena.Title" />
+    <TextView android:id="@+id/athlete_club" style="@style/Arena.Label" />
+    <LinearLayout android:id="@+id/athlete_follow_actions" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+    <com.google.android.material.tabs.TabLayout android:id="@+id/athlete_tabs" android:layout_width="match_parent" android:layout_height="48dp" android:background="@color/background" />
+    <LinearLayout android:id="@+id/athlete_overview" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="vertical" />
+    <LinearLayout android:id="@+id/athlete_fixtures" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="vertical" android:visibility="gone" />
+    <LinearLayout android:id="@+id/athlete_recordings" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="vertical" android:visibility="gone" />
+</LinearLayout>
