@@ -6,7 +6,8 @@ async function main(){
   const previous=JSON.parse(cp.execFileSync('docker',['inspect','shadow_developers-api-1'],{encoding:'utf8'}))[0];
   const current=Object.fromEntries(previous.Config.Env.map(e=>{const i=e.indexOf('=');return [e.slice(0,i),e.slice(i+1)];}));
   const local=fs.existsSync('.env')?require('node:util').parseEnv(fs.readFileSync('.env','utf8')):{};
-  const env={...process.env,...local,DAY1_SALT:current.DAY1_SALT};
+  const env={...process.env,...local};
+  env.DAY1_SALT=local.DAY1_SALT||process.env.DAY1_SALT||current.DAY1_SALT;
   const foundationOnly=process.argv.includes('--foundation-only');
   if(!env.DAY2_SALT&&!foundationOnly)throw new Error('Official DAY2_SALT is absent; deployment was not attempted.');
   const config=JSON.parse(cp.execFileSync('docker',['compose','config','--format','json'],{env,encoding:'utf8'}));
