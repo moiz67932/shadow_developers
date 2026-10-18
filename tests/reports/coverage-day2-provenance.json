@@ -1,0 +1,162 @@
+{
+  "measured_at": "2026-10-18T08:54:05.780Z",
+  "coverage_inputs": [
+    "backend/coverage/coverage-final.json",
+    "/tmp/nascon-storage-coverage/coverage-final.json",
+    "/tmp/nascon-media-failure-coverage/coverage-final.json"
+  ],
+  "modules": {
+    "streaming": {
+      "covered": 65,
+      "total": 66,
+      "line_percent": 98.48,
+      "files": [
+        {
+          "file": "backend/src/domain/streaming/index.js",
+          "lines": {
+            "total": 26,
+            "covered": 26,
+            "skipped": 0,
+            "pct": 100
+          }
+        },
+        {
+          "file": "backend/src/services/media-control.js",
+          "lines": {
+            "total": 7,
+            "covered": 7,
+            "skipped": 0,
+            "pct": 100
+          }
+        },
+        {
+          "file": "backend/src/services/media-sessions.js",
+          "lines": {
+            "total": 21,
+            "covered": 20,
+            "skipped": 0,
+            "pct": 95.23
+          }
+        },
+        {
+          "file": "backend/src/services/object-storage.js",
+          "lines": {
+            "total": 12,
+            "covered": 12,
+            "skipped": 0,
+            "pct": 100
+          }
+        }
+      ]
+    },
+    "costream": {
+      "covered": 32,
+      "total": 32,
+      "line_percent": 100,
+      "files": [
+        {
+          "file": "backend/src/domain/costream/index.js",
+          "lines": {
+            "total": 32,
+            "covered": 32,
+            "skipped": 0,
+            "pct": 100
+          }
+        }
+      ]
+    },
+    "qr_guest": {
+      "covered": 129,
+      "total": 139,
+      "line_percent": 92.8,
+      "files": [
+        {
+          "file": "backend/src/domain/qr_guest/index.js",
+          "lines": {
+            "total": 57,
+            "covered": 57,
+            "skipped": 0,
+            "pct": 100
+          }
+        },
+        {
+          "file": "backend/src/routes/guest-web.js",
+          "lines": {
+            "total": 78,
+            "covered": 68,
+            "skipped": 0,
+            "pct": 87.17
+          }
+        },
+        {
+          "file": "backend/src/services/qr-cache.js",
+          "lines": {
+            "total": 4,
+            "covered": 4,
+            "skipped": 0,
+            "pct": 100
+          }
+        }
+      ]
+    },
+    "moderation_dlq": {
+      "covered": 45,
+      "total": 45,
+      "line_percent": 100,
+      "files": [
+        {
+          "file": "backend/src/domain/moderation_dlq/index.js",
+          "lines": {
+            "total": 45,
+            "covered": 45,
+            "skipped": 0,
+            "pct": 100
+          }
+        }
+      ]
+    },
+    "observability": {
+      "covered": 63,
+      "total": 65,
+      "line_percent": 96.92,
+      "files": [
+        {
+          "file": "backend/src/domain/observability/index.js",
+          "lines": {
+            "total": 38,
+            "covered": 38,
+            "skipped": 0,
+            "pct": 100
+          }
+        },
+        {
+          "file": "backend/src/services/notifications.js",
+          "lines": {
+            "total": 5,
+            "covered": 5,
+            "skipped": 0,
+            "pct": 100
+          }
+        },
+        {
+          "file": "backend/src/services/privacy-cache.js",
+          "lines": {
+            "total": 7,
+            "covered": 7,
+            "skipped": 0,
+            "pct": 100
+          }
+        },
+        {
+          "file": "backend/src/services/realtime.js",
+          "lines": {
+            "total": 15,
+            "covered": 13,
+            "skipped": 0,
+            "pct": 86.66
+          }
+        }
+      ]
+    }
+  }
+}
