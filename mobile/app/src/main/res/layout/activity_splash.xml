@@ -1,0 +1,10 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/splash_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:background="@color/navy" android:padding="28dp">
+    <TextView style="@style/Arena.Label" android:text="CHAMPIONSHIP PORTAL" android:gravity="center" />
+    <Space android:layout_width="1dp" android:layout_height="32dp" />
+    <ImageView android:layout_width="148dp" android:layout_height="148dp" android:src="@drawable/nascon_logo" android:scaleType="centerCrop" android:background="@drawable/bg_arena_glow" android:clipToOutline="true" android:padding="12dp" android:contentDescription="NaSCon Arena emblem" />
+    <Space android:layout_width="1dp" android:layout_height="24dp" />
+    <TextView style="@style/Arena.Title" android:text="NASCON ARENA" android:gravity="center" android:textSize="32sp" />
+    <TextView style="@style/Arena.Label" android:text="EVERY GAME. ONE ARENA." android:gravity="center" android:textColor="@color/text_secondary" />
+    <ProgressBar android:layout_width="28dp" android:layout_height="28dp" android:layout_marginTop="32dp" android:indeterminateTint="@color/cyan" android:contentDescription="Opening your arena" />
+    <TextView style="@style/Arena.Body" android:text="2026 · MULTI-SPORT CHAMPIONSHIP" android:gravity="center" android:layout_marginTop="32dp" />
+</LinearLayout>

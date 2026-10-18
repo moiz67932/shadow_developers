@@ -43,7 +43,9 @@ class MainActivity: AppCompatActivity() {
     fun validRemembered(r:JSONObject):Boolean=try{val payload=r.getString("token").split(".")[1];JSONObject(String(android.util.Base64.decode(payload,android.util.Base64.URL_SAFE or android.util.Base64.NO_WRAP))).getLong("exp")>System.currentTimeMillis()/1000}catch(_:Exception){false}
     var online=true
     var generation=0
-    val history=java.util.ArrayDeque<String>()
+    val history=java.util.ArrayDeque<JSONObject>()
+    var routeArgs=JSONObject()
+    var pendingRoute:JSONObject?=null
     var restoringBack=false
     val cart=linkedMapOf<String,Int>()
     var orderRequest: JSONObject?=null
@@ -58,26 +60,37 @@ class MainActivity: AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)){v,i->val b=i.getInsets(WindowInsetsCompat.Type.systemBars());v.setPadding(b.left,b.top,b.right,b.bottom);i}
         content=findViewById(R.id.content);status=findViewById(R.id.status);progress=findViewById(R.id.progress);nav=findViewById(R.id.nav)
         remembered=SessionStore(this,"remembered_accounts");local=LocalStore(this);sessions=SessionStore(this);session=sessions.read();api=ApiClient(prefs.getString("server","http://127.0.0.1:8080")!!,session?.optString("token")?:"")
-        findViewById<View>(R.id.settings).setOnClickListener { settings() };findViewById<View>(R.id.back).setOnClickListener { back() }
+        findViewById<View>(R.id.settings).setOnClickListener { if(session==null)settings()else profileScreen() };findViewById<View>(R.id.global_search).setOnClickListener { if(session==null)signUpScreen()else vodArchive() };findViewById<View>(R.id.back).setOnClickListener { back() }
         onBackPressedDispatcher.addCallback(this,object:OnBackPressedCallback(true){override fun handleOnBackPressed(){back()}})
         selectedLeague=state?.getString("league")?:"demo-alpha-cup";matchId=state?.getString("match")?:""
         val incomingEntity=intent.getStringExtra("arena_entity"); if(incomingEntity!=null&&validEntity(incomingEntity))prefs.edit().putString("creator_entity",incomingEntity).apply()
+        state?.getString("history")?.let { raw -> try { JSONArray(raw).objects().forEach { history.addLast(it) } } catch (_:Exception) {} };pendingRoute=state?.getString("route")?.let { try { JSONObject(it) } catch (_:Exception) { null } }
         val saved=if(incomingEntity!=null&&validEntity(incomingEntity))"Live Arena" else state?.getString("screen")?:"Home"
-        online=!forcedOffline();if(session!=null){orderRequest=local.get("checkout:$owner")?.takeIf{it.has("order_id")};val savedCart=local.get("cart:$owner");savedCart?.keys()?.forEach{cart[it]=savedCart.optInt(it)}};if(session==null)login() else {data=local.get("bootstrap:$owner")?:JSONObject();refresh {go(saved)} }
+        online=!forcedOffline();if(session!=null){orderRequest=local.get("checkout:$owner")?.takeIf{it.has("order_id")};val savedCart=local.get("cart:$owner");savedCart?.keys()?.forEach{cart[it]=savedCart.optInt(it)}};if(session==null)login() else {data=local.get("bootstrap:$owner")?:JSONObject();refresh {if(incomingEntity!=null)go(saved)else pendingRoute?.let { restoringBack=true;restoreRoute(it);restoringBack=false;pendingRoute=null }?:go(saved)} }
     }
-    override fun onSaveInstanceState(out:Bundle){super.onSaveInstanceState(out);out.putString("screen",screen);out.putString("match",matchId);out.putString("league",selectedLeague);if(session!=null)local.put("cart:$owner",JSONObject(cart.toMap()))}
+    override fun onSaveInstanceState(out:Bundle){super.onSaveInstanceState(out);out.putString("screen",screen);out.putString("route",JSONObject().put("screen",screen).put("args",routeArgs).toString());out.putString("history",JSONArray(history.toList()).toString());out.putString("match",matchId);out.putString("league",selectedLeague);if(session!=null)local.put("cart:$owner",JSONObject(cart.toMap()))}
     override fun onPause(){arenaVideo?.pause();super.onPause()}
     override fun onDestroy(){arenaVideo?.stopPlayback();super.onDestroy();executor.shutdown()}
-    fun back(){if(screen=="Sign in"){finish()}else if(session==null)login()else if(screen=="Home"){moveTaskToBack(true)}else{val previous=if(history.isEmpty())"Home"else history.removeLast();restoringBack=true;when(previous){"Match detail"->matchScreen(matchId);"Club roster","Roster action"->rosterScreen();"Cart & checkout","Product detail"->cartScreen();"Server settings"->settings();else->go(previous)};restoringBack=false}}
+    fun back(){
+        if(screen=="Sign in")finish()
+        else if(session==null)login()
+        else if(history.isEmpty()){if(screen=="Home")moveTaskToBack(true)else home()}
+        else {val previous=history.removeLast();restoringBack=true;restoreRoute(previous);restoringBack=false}
+    }
     fun start(title:String){
         arenaVideo?.stopPlayback();arenaVideo=null
-        if(!restoringBack&&screen!=title&&screen!="Sign in"&&session!=null){if(history.size>20)history.removeFirst();history.addLast(screen)}
+        val roots=setOf("Home","Fixtures","Standings","Store","Profile")
+        if(!restoringBack&&screen!=title&&screen!="Sign in"&&session!=null){
+            if(title in roots)history.clear()
+            else {if(history.size>20)history.removeFirst();history.addLast(JSONObject().put("screen",screen).put("args",JSONObject(routeArgs.toString())))}
+        }
+        routeArgs=JSONObject()
         generation++;screen=title;findViewById<TextView>(R.id.title).text=title.uppercase();content.removeAllViews();findViewById<ScrollView>(R.id.scroll).scrollTo(0,0)
         val topLevel=title in listOf("Home","Fixtures","Standings","Store","Profile","Sign in")
         findViewById<View>(R.id.back).visibility=if(topLevel)View.INVISIBLE else View.VISIBLE
         nav.visibility=if(session==null)View.GONE else View.VISIBLE;nav.removeAllViews()
         if(session!=null){
-            val selectedTab=when(title){"Match detail"->"Fixtures";"Product detail","Cart & checkout","Paid receipt"->"Store";"Club roster","Roster action","Sync queue","Server settings","Active Stream Director","Match Telemetry","Creator tools","Broadcast Studio","Stream Key Controls","Co-stream Lobby","Co-stream Host Room","QR Scanner","QR Share & Export","Athlete Profiles","Athlete Profile","Live Arena"->"Profile";else->title}
+            val selectedTab=when(title){"Match detail"->"Fixtures";"Product detail","Cart & checkout","Paid receipt"->"Store";"Club roster","Roster action","Sync queue","Server settings","Active Stream Director","Match Telemetry","Admin dashboard","VOD Archive","VOD Player","Creator tools","Broadcast Studio","Stream Key Controls","Co-stream Lobby","Co-stream Host Room","QR Scanner","QR Share & Export","Athlete Profiles","Athlete Profile","Live Arena"->"Home";else->title}
             val items=listOf(Triple(R.drawable.ic_home,"Home","Home"),Triple(R.drawable.ic_calendar,"Fixtures","Fixtures"),Triple(R.drawable.ic_standings,"Standings","Standings"),Triple(R.drawable.ic_bag,"Store","Store"),Triple(R.drawable.ic_person,"Profile","Profile"))
             for((icon,label,target) in items){
                 val selected=label==selectedTab
@@ -102,39 +115,7 @@ class MainActivity: AppCompatActivity() {
     fun work(task:()->JSONObject,done:(JSONObject)->Unit,failed:((Exception)->Unit)?=null){if(busy)return;busy=true;progress.visibility=View.VISIBLE;banner("Connecting…");val stamp=generation;executor.execute {try{val r=task();runOnUiThread{if(isDestroyed)return@runOnUiThread;busy=false;progress.visibility=View.GONE;online=true;prefs.edit().putString("last",java.text.DateFormat.getDateTimeInstance().format(java.util.Date())).apply();banner();if(stamp==generation)done(r)}}catch(e:Exception){runOnUiThread{if(isDestroyed)return@runOnUiThread;busy=false;progress.visibility=View.GONE;if(e !is ApiError)online=false;banner();if(stamp==generation){if(failed!=null)failed(e)else{val message=if(e is ApiError)e.message?:e.code else "Could not reach your server. Check USB forwarding or hotspot, then retry.";notice(message)}}}}}}
     fun fetch(path:String,done:(JSONObject)->Unit){val key="$owner:$path";if(forcedOffline()){online=false;banner();val cached=local.get(key);if(cached!=null)done(cached)else{card("Not saved on this device","Load this screen online first.");button("Retry"){go(screen)}};return};work({val r=api.call(path);local.put(key,r);r},done,{e->val cached=local.get(key);if(cached!=null){online=false;banner();done(cached)}else{card("Unable to load",if(e is ApiError)e.message?:"Request failed" else "Connect to your server to load this screen for the first time.");button("Retry"){go(screen)}}})}
     fun refresh(done:()->Unit){if(forcedOffline()){online=false;data=local.get("bootstrap:$owner")?:JSONObject();done();banner();return};work({val r=api.call("/api/v1/bootstrap");local.put("bootstrap:$owner",r);r},{r->data=r;done()},{e->if(e is ApiError&&e.code=="UNAUTHENTICATED"){sessions.clear();session=null;api.token="";login();notice("Your session expired. Please sign in again.")}else{data=local.get("bootstrap:$owner")?:JSONObject();done()}})}
-    fun login(){start("Sign in");card("NaSCon / 2026","League & club operations");text("Welcome back",23f,true);text("Sign in to your league workspace.",13f)
-        val emails=listOf("organizer","manager","admin","player","viewer");val choose=picker("Demo account",emails.map{"${it.replaceFirstChar{c->c.uppercase()}} • ${it}@nascon.test"});val email=field("Email","organizer@nascon.test",InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);val password=field("Password","Nascon@26",InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD)
-        choose.onItemSelectedListener=object:AdapterView.OnItemSelectedListener{override fun onNothingSelected(p:AdapterView<*>?){};override fun onItemSelected(p:AdapterView<*>?,v:View?,pos:Int,id:Long){email.setText("${emails[pos]}@nascon.test")}}
-        button("Sign in"){val e=email.text.toString().trim();if(!android.util.Patterns.EMAIL_ADDRESS.matcher(e).matches()){email.error="Enter a valid email"}else if(password.text.isNullOrEmpty()){password.error="Enter your password"}else work({api.call("/api/v1/login",JSONObject().put("email",e).put("password",password.text.toString()))},{r->session=r;sessions.save(r);api.token=r.getString("token");val vault=remembered.read()?:JSONObject();vault.put(api.base+"|"+e,JSONObject().put("session",r).put("proof",passwordProof(e,password.text.toString())));remembered.save(vault);refresh{go("Home")}})}
-        button("Open remembered account offline"){val e=email.text.toString().trim();val entry=remembered.read()?.optJSONObject(api.base+"|"+e);val cached=entry?.optJSONObject("session");if(cached==null||entry.optString("proof")!=passwordProof(e,password.text.toString())||!validRemembered(cached)){notice("Sign in online to this account first. Remembered sessions must be unexpired and require the correct password.")}else{session=cached;sessions.save(cached);api.token=cached.getString("token");online=false;prefs.edit().putBoolean("offline",true).commit();data=local.get("bootstrap:$owner")?:JSONObject();home()}};button("Server connection settings"){settings()};text("Demo accounts • competition access",11f);compactAuth()
-    }
-    private fun compactAuth() {
-        fun resize(view: View) {
-            when (view) {
-                is EditText -> { view.textSize = 14f; view.minHeight = dp(48) }
-                is com.google.android.material.button.MaterialButton -> {
-                    view.textSize = 13f; view.minHeight = dp(48); view.minimumHeight = dp(48)
-                    (view.layoutParams as? LinearLayout.LayoutParams)?.let { it.bottomMargin = dp(4) }
-                }
-                is com.google.android.material.textfield.TextInputLayout -> {
-                    (view.layoutParams as? LinearLayout.LayoutParams)?.let { it.bottomMargin = dp(8) }
-                }
-                is Spinner -> {
-                    val labels = (0 until view.adapter.count).map { view.adapter.getItem(it).toString() }
-                    view.adapter = object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, labels) {
-                        override fun getView(position: Int, convertView: View?, parent: android.view.ViewGroup): View =
-                            super.getView(position, convertView, parent).also { (it as? TextView)?.textSize = 13f }
-                        override fun getDropDownView(position: Int, convertView: View?, parent: android.view.ViewGroup): View =
-                            super.getDropDownView(position, convertView, parent).also { (it as? TextView)?.textSize = 14f }
-                    }
-                    view.minimumHeight = dp(48)
-                    view.layoutParams.height = dp(48)
-                }
-            }
-            if (view is android.view.ViewGroup) for (i in 0 until view.childCount) resize(view.getChildAt(i))
-        }
-        resize(content)
-    }
+    fun login(){signInScreen()}
     fun settings(){start("Server settings");card("Connect your arena","USB: http://127.0.0.1:8080\nEmulator: http://10.0.2.2:8080\nHotspot: your configured laptop address");val url=field("Server URL",api.base,InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI)
         val off=android.widget.Switch(this).apply{text="Work offline • use cache and queue actions";isChecked=prefs.getBoolean("offline",false);minHeight=dp(56);setOnCheckedChangeListener{_,checked->prefs.edit().putBoolean("offline",checked).commit();online=!forcedOffline();banner()}};content.addView(off)
         fun valid():String?{val value=url.text.toString().trim().trimEnd('/');return try{val u=java.net.URI(value);if(u.scheme !in listOf("http","https")||u.host.isNullOrBlank()||u.userInfo!=null||u.query!=null||u.fragment!=null||!u.path.isNullOrEmpty()){url.error="Use http(s)://host:port without a path";null}else value}catch(_:Exception){url.error="Enter a valid server URL";null}}
@@ -143,7 +124,7 @@ class MainActivity: AppCompatActivity() {
     }
     @Deprecated("Scanner activity result compatibility")
     override fun onActivityResult(requestCode:Int,resultCode:Int,result:android.content.Intent?){super.onActivityResult(requestCode,resultCode,result);if(requestCode==2031&&resultCode==RESULT_OK)result?.getStringExtra("SCAN_RESULT")?.let{openArenaLink(it)}}
-    fun go(name:String){when(name){"Active Stream Director"->streamDirector();"Match Telemetry"->matchTelemetry();"Creator tools"->creatorHub();"Broadcast Studio"->broadcastStudio();"Stream Key Controls"->streamKeysScreen();"Co-stream Lobby"->costreamLobby();"Co-stream Host Room"->hostRoom();"QR Scanner"->qrScannerScreen();"QR Share & Export"->qrExportScreen();"Athlete Profiles"->athleteDirectory();"Athlete Profile"->athleteScreen(prefs.getString("creator_athlete","player-alpha-1")!!);"Live Arena"->arenaScreen(prefs.getString("creator_entity","match-m1")!!);"Fixtures"->fixturesScreen();"Standings"->standingsScreen();"Store"->storeScreen();"Profile"->profileScreen();"Match detail"->matchScreen(matchId);"Club roster"->rosterScreen();"Sync queue"->queueScreen();else->home()}}
+    fun go(name:String){when(name){"Sign in"->login();"Sign up"->signUpScreen();"Server settings"->settings();"VOD Archive"->vodArchive();"VOD Player"->vodPlayer(prefs.getString("last_vod",null)?.let{JSONObject(it)}?:JSONObject());"Admin dashboard"->adminDashboard();"Active Stream Director"->streamDirector();"Match Telemetry"->matchTelemetry();"Creator tools"->creatorHub();"Broadcast Studio"->broadcastStudio();"Stream Key Controls"->streamKeysScreen();"Co-stream Lobby"->costreamLobby();"Co-stream Host Room"->hostRoom();"QR Scanner"->qrScannerScreen();"QR Share & Export"->qrExportScreen();"Athlete Profiles"->athleteDirectory();"Athlete Profile"->athleteScreen(prefs.getString("creator_athlete","player-alpha-1")!!);"Live Arena"->arenaScreen(prefs.getString("creator_entity","match-m1")!!);"Fixtures"->fixturesScreen();"Standings"->standingsScreen();"Store"->storeScreen();"Profile"->profileScreen();"Match detail"->matchScreen(matchId);"Club roster"->rosterScreen();"Sync queue"->queueScreen();else->home()}}
     fun home(){
         start("Home");sectionTitle("Matchday arena","Live scores, big clashes and tournament operations")
         card("●  NASCON NATIONAL CUP '26","ARENA VERIFIED  •  ${if(online)"SYNCED NOW"else"OFFLINE CACHE"}")
@@ -159,13 +140,13 @@ class MainActivity: AppCompatActivity() {
         val upcoming=all.filter{it.optString("status")=="upcoming"}.take(2)
         if(upcoming.isNotEmpty()){sectionTitle("Big clashes today","Tap a fixture to open Match Center");upcoming.forEachIndexed{i,f->fixtureCard(f,i+1)}}
         sectionTitle("Arena access","Tournament tools for your role")
-        button("Creator tools • Live, QR & athletes"){creatorHub()}
+        button("Watch live arena"){arenaScreen(defaultArenaEntity())};button("VOD archive & replays"){vodArchive()};button("Go live • Broadcast Studio"){broadcastStudio()};button("Creator tools • Live, QR & athletes"){creatorHub()}
         button("Explore fixtures"){go("Fixtures")};button("View standings"){go("Standings")};button("Club & roster"){rosterScreen()};button("Store & merchandise"){go("Store")};button("Offline changes & sync"){queueScreen()};button("Refresh workspace"){refresh{home()}}
         sectionTitle("Latest from NaSCon","Matchday highlights")
-        assetImage(R.drawable.highlight_goal,"Electrifying last-minute goal",112);assetImage(R.drawable.highlight_trophy,"Championship trophy celebration",112)
-        if(canScore)button("Prepare competition demonstration"){confirm("Create the tenant's demonstration league and roster once? Existing purchases and roster actions will be preserved."){work({api.call("/api/v1/demo/prepare",JSONObject())},{refresh{home()}})}}
+        assetImage(R.drawable.highlight_goal,"Browse tournament recordings",112);content.getChildAt(content.childCount-1).apply{isClickable=true;isFocusable=true;contentDescription="Browse tournament recordings";setOnClickListener{vodArchive()}}
+        if(canScore)button("Admin dashboard"){adminDashboard()};if(canScore)button("Prepare competition demonstration"){confirm("Create the tenant's demonstration league and roster once? Existing purchases and roster actions will be preserved."){work({api.call("/api/v1/demo/prepare",JSONObject())},{refresh{home()}})}}
         if(fixtures.length()==0)card("Your workspace is ready","An organizer can prepare the competition demonstration to populate matches. Refresh after setup.")
     }
-    fun profileScreen(){start("Profile");button("Creator tools • Live, QR & athletes"){creatorHub()};card("Your identity",user.optString("email")+"\n"+role.replace('_',' ')+"\nTenant: "+user.optString("tenant_id"));button("Club & roster"){rosterScreen()};button("Offline changes & sync"){queueScreen()};button("Server settings"){settings()};button("Sign out"){confirm("Sign out? Pending changes stay on this device, linked to this account and server."){sessions.clear();session=null;api.token="";data=JSONObject();cart.clear();orderRequest=null;history.clear();login()}}}
+    fun profileScreen(){nativeProfile()}
 }
 fun JSONArray.objects(): List<JSONObject> = (0 until length()).mapNotNull{optJSONObject(it)}

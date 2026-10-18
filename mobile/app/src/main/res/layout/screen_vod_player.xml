@@ -1,0 +1,12 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <FrameLayout android:layout_width="match_parent" android:layout_height="220dp" android:background="@drawable/bg_card_feature" android:clipToOutline="true">
+        <VideoView android:id="@+id/replay_video" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_gravity="center" android:contentDescription="Recording player" />
+        <ProgressBar android:id="@+id/replay_loading" android:layout_width="40dp" android:layout_height="40dp" android:layout_gravity="center" android:indeterminateTint="@color/cyan" />
+    </FrameLayout>
+    <TextView android:id="@+id/replay_title" style="@style/Arena.Title" android:layout_marginTop="16dp" />
+    <TextView android:id="@+id/replay_status" style="@style/Arena.Body" android:accessibilityLiveRegion="polite" android:text="Preparing recording…" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/replay_retry" style="@style/Arena.Button" android:text="Retry playback" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/replay_share" style="@style/Arena.Secondary" android:text="Share replay" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/replay_athlete" style="@style/Arena.Secondary" android:text="View athlete profile" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/replay_archive" style="@style/Arena.Secondary" android:text="Browse VOD archive" />
+</LinearLayout>

@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <include layout="@layout/view_arena_hero" />
+    <TextView style="@style/Arena.Title" android:text="Join the arena." />
+    <TextView style="@style/Arena.Body" android:text="Create your fan account. Follow athletes, join the conversation and keep your matchday kit together." />
+    <TextView style="@style/Arena.Label" android:text="FAN / SPECTATOR ACCOUNT" />
+    <com.google.android.material.textfield.TextInputLayout style="@style/Arena.Input" android:hint="Email address">
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/register_email" style="@style/Arena.Edit" android:inputType="textEmailAddress" android:autofillHints="emailAddress" android:maxLength="254" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout style="@style/Arena.Input" android:hint="Password · 8–128 characters" app:endIconMode="password_toggle">
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/register_password" style="@style/Arena.Edit" android:inputType="textPassword" android:autofillHints="newPassword" android:maxLength="128" android:saveEnabled="false" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout style="@style/Arena.Input" android:hint="Confirm password" app:endIconMode="password_toggle">
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/register_confirm" style="@style/Arena.Edit" android:inputType="textPassword" android:autofillHints="newPassword" android:maxLength="128" android:saveEnabled="false" android:imeOptions="actionDone" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <TextView android:id="@+id/register_error" style="@style/Arena.Body" android:textColor="@color/error" android:visibility="gone" android:accessibilityLiveRegion="polite" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/register_submit" style="@style/Arena.Button" android:text="Create account →" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/register_sign_in" style="@style/Arena.Secondary" android:text="Already registered? Sign in" />
+    <TextView style="@style/Arena.Body" android:text="Athlete, club manager and organizer access is assigned by your tournament administrator." />
+</LinearLayout>

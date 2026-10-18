@@ -1,0 +1,18 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <include layout="@layout/view_arena_hero" android:layout_width="match_parent" android:layout_height="128dp" />
+    <TextView style="@style/Arena.Title" android:text="Welcome back." android:textSize="23sp" />
+    <TextView style="@style/Arena.Body" android:text="Sign in to your league workspace and live hub." />
+    <TextView style="@style/Arena.Label" android:text="DEMO PROFILE · QUICK FILL" />
+    <Spinner android:id="@+id/login_demo" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_chip" android:contentDescription="Demo account preset" android:layout_marginBottom="12dp" />
+    <com.google.android.material.textfield.TextInputLayout style="@style/Arena.Input" android:hint="Account email">
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/login_email" style="@style/Arena.Edit" android:inputType="textEmailAddress" android:autofillHints="emailAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout style="@style/Arena.Input" android:hint="Password" app:endIconMode="password_toggle">
+        <com.google.android.material.textfield.TextInputEditText android:id="@+id/login_password" style="@style/Arena.Edit" android:inputType="textPassword" android:autofillHints="password" android:saveEnabled="false" android:imeOptions="actionDone" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <TextView android:id="@+id/login_error" style="@style/Arena.Body" android:textColor="@color/error" android:visibility="gone" android:accessibilityLiveRegion="polite" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/login_submit" style="@style/Arena.Button" android:text="Sign in →" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/login_offline" style="@style/Arena.Secondary" android:text="Open remembered account offline" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/login_register" style="@style/Arena.Secondary" android:text="New to the arena? Create account" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/login_settings" style="@style/Arena.Secondary" android:text="Server connection settings" />
+</LinearLayout>
