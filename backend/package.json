@@ -21,6 +21,7 @@
     "pdfkit": "^0.16.0",
     "pg": "^8.13.1",
     "qrcode": "1.5.4",
+    "ws": "8.22.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -36,7 +37,13 @@
       "<rootDir>/../tests/setup.js"
     ],
     "collectCoverageFrom": [
-      "src/domain/**/*.js"
+      "src/domain/**/*.js",
+      "src/services/day2-db.js",
+      "src/services/media-control.js",
+      "src/services/privacy-cache.js",
+      "src/services/realtime.js",
+      "src/utils/day2-sign.js",
+      "src/routes/day2.js"
     ],
     "coverageDirectory": "coverage",
     "coverageReporters": [

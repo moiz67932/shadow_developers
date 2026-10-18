@@ -1,0 +1,29 @@
+{
+  "measured_at": "2026-10-18T08:09:34.544Z",
+  "healthStatus": 503,
+  "officialSaltPresentInAPI": false,
+  "accountClaimsVerified": true,
+  "guestWrites": [
+    {
+      "route": "/api/v1/chat",
+      "status": 403,
+      "code": "GUEST_WRITE_FORBIDDEN"
+    },
+    {
+      "route": "/audit/v1/checkout",
+      "status": 403,
+      "code": "GUEST_WRITE_FORBIDDEN"
+    },
+    {
+      "route": "/audit/v1/events",
+      "status": 403,
+      "code": "GUEST_WRITE_FORBIDDEN"
+    }
+  ],
+  "postgresContainer": "6308219f1f101765ac5b378d9eb68640b355cc211e539e50490b61fb641cbdc0",
+  "redisContainer": "bae200ce3094a96a667b5d835aad36da7523704c48ea6b49181df867df6b7457",
+  "orders": [
+    "1768be07-dca1-4261-af81-8bf5ed702462|3580969873d7bf14152de23361be2283",
+    "7da27f75-a394-4320-a0ae-9132b38f1287|4d2ad7272ed6538b808f8b76026b8dce"
+  ]
+}

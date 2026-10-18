@@ -18,7 +18,8 @@ async function key(input){const b=parse(schema,input);return tx('key:'+b.player_
     const duplicate=(await c.query('SELECT * FROM day2_stream_keys WHERE stream_key=$1',[stream_key])).rows[0];
     if(duplicate&&(duplicate.player_id!==b.player_id||duplicate.status==='revoked'))fail(409,'KEY_REVOKED','Stream key is unavailable.');
     await c.query("UPDATE day2_stream_keys SET status='revoked',revoked_at=now() WHERE player_id=$1 AND status='active' AND stream_key<>$2",[b.player_id,stream_key]);
-    await c.query("INSERT INTO day2_stream_keys(stream_key,player_id,label,status) VALUES($1,$2,$3,'active') ON CONFLICT(stream_key) DO UPDATE SET label=EXCLUDED.label",[stream_key,b.player_id,b.label]);
+    const saved=await c.query("INSERT INTO day2_stream_keys(stream_key,player_id,label,status) VALUES($1,$2,$3,'active') ON CONFLICT(stream_key) DO UPDATE SET label=EXCLUDED.label WHERE day2_stream_keys.player_id=EXCLUDED.player_id AND day2_stream_keys.status='active' RETURNING stream_key",[stream_key,b.player_id,b.label]);
+    if(!saved.rowCount)fail(409,'KEY_REVOKED','Stream key is unavailable.');
   }
   const payload={action:b.action,player_id:b.player_id,status,stream_key};
   const body={player_id:b.player_id,label:b.label,stream_key,status,ingest_endpoints:status==='active'?{rtmp:`rtmp://localhost:1935/live/${stream_key}`,webrtc:`http://localhost:8889/live/${stream_key}/whip`}:null,playback_url:status==='active'?`http://localhost:8888/live/${stream_key}/index.m3u8`:null,signature:signDay2(stream_key,payload)};

@@ -40,7 +40,7 @@ async function exportQR(entity_id,format){if(!['svg','png','pdf'].includes(forma
 }
 const mergeSchema=z.object({guest_token:z.string().min(1).max(256).startsWith('guest_'),registered_user_id:id,guest_cart:z.array(z.object({variant_id:id,quantity:int.min(1)})).min(1).max(10),test_write_block:z.boolean().default(true)});
 async function merge(input,actor){const b=parse(mergeSchema,input);return tx('guest:'+b.guest_token,async c=>{
-  const s=await getState(c);if(!players(s).some(p=>p.player_id===b.registered_user_id)&&!s.users.some(u=>u.user_id===b.registered_user_id&&!u.anonymized))fail(404,'PLAYER_NOT_FOUND','Registered user not found.');
+  const s=await getState(c);if(!players(s).some(p=>p.player_id===b.registered_user_id&&!p.anonymized)&&!s.users.some(u=>u.user_id===b.registered_user_id&&!u.anonymized))fail(404,'PLAYER_NOT_FOUND','Registered user not found.');
   const ids=[...new Set(b.guest_cart.map(i=>i.variant_id))].sort();const variants=new Map((s.products??[]).flatMap(p=>p.variants??[]).map(v=>[v.variant_id,v]));
   const stock=(await c.query('SELECT variant_id,stock FROM inventory WHERE variant_id=ANY($1) ORDER BY variant_id FOR UPDATE',[ids])).rows;
   for(const variant_id of ids)if(!variants.has(variant_id)||!stock.some(r=>r.variant_id===variant_id))fail(404,'VARIANT_NOT_FOUND','Variant not found.',{variant_id});

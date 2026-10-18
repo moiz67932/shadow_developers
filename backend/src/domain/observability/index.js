@@ -29,6 +29,7 @@ async function erase(user_id){parse(id,user_id);return tx('privacy:'+user_id,asy
   await c.query('DELETE FROM day2_cart_merges WHERE user_id=ANY($1) OR guest_token=ANY($2)',[linked,tokens]);
   await c.query('DELETE FROM day2_guest_tokens WHERE registered_user_id=ANY($1)',[linked]);
   await c.query('DELETE FROM day2_carts WHERE user_id=ANY($1)',[linked]);
+  await c.query('DELETE FROM day2_stream_keys WHERE player_id=ANY($1)',[linked]);
   await c.query("DELETE FROM day2_notifications WHERE recipient_id=ANY($1) OR payload->>'user_id'=ANY($1) OR payload->>'recipient_id'=ANY($1)",[linked]);
   await c.query('DELETE FROM day2_private_cache_refs WHERE user_id=ANY($1)',[linked]);
   await c.query('DELETE FROM day2_follows WHERE follower_id=ANY($1)',[linked]);

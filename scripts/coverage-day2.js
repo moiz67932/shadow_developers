@@ -1,0 +1,5 @@
+const fs=require('fs');
+const report=JSON.parse(fs.readFileSync('backend/coverage/coverage-summary.json','utf8'));
+const modules={streaming:['/src/domain/streaming/','/src/services/media-control.js'],costream:['/src/domain/costream/'],qr_guest:['/src/domain/qr_guest/'],moderation_dlq:['/src/domain/moderation_dlq/'],observability:['/src/domain/observability/','/src/services/privacy-cache.js','/src/services/realtime.js']};
+const results={};for(const [name,patterns] of Object.entries(modules)){const files=Object.entries(report).filter(([file])=>patterns.some(p=>file.includes(p)));const total=files.reduce((n,[,r])=>n+r.lines.total,0),covered=files.reduce((n,[,r])=>n+r.lines.covered,0);if(!total)throw new Error('Missing measured coverage for '+name);results[name]=Math.floor(covered/total*10000)/100;}
+fs.writeFileSync('COVERAGE_DAY2.json',JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify(results));

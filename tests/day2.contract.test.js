@@ -31,6 +31,11 @@ integration('Day 2 exact contracts',()=>{
    expect((await post('/stream/key',{action:'invalid',player_id:'missing'})).status).toBe(400);expect((await post('/stream/key',{action:'revoke',player_id:'missing'})).body.error.code).toBe('PLAYER_NOT_FOUND');expect((await post('/stream/key',{action:'revoke',player_id:'player-alpha-1'})).body.error.code).toBe('STREAM_NOT_FOUND');
    const r=await Promise.all(Array.from({length:10},()=>post('/stream/key',{action:'rotate',player_id:'player-alpha-1'})));expect(r.every(r=>r.status===200)).toBe(true);expect((await pool.query("SELECT * FROM day2_stream_keys WHERE player_id='player-alpha-1' AND status='active'")).rowCount).toBe(1);
  });
+ test('concurrent cross-account override collision never grants the same key to two players',async()=>{
+   const responses=await Promise.all(['player-alpha-1','player-alpha-2'].map(player_id=>post('/stream/key',{action:'generate',player_id,stream_key_override:'same-override'})));
+   expect(responses.map(r=>r.status).sort()).toEqual([201,409]);expect(responses.find(r=>r.status===409).body.error.code).toBe('KEY_REVOKED');
+   expect((await pool.query("SELECT * FROM day2_stream_keys WHERE stream_key='same-override'")).rowCount).toBe(1);
+ });
  const session={session_id:'cs-session-101',host_player_id:'player-alpha-1',participants:['player-alpha-1','player-alpha-2','player-beta-1','player-beta-2'],layout:'grid_4',simulate_host_drop:true};
  test('four-way handoff contract and simultaneous replay',async()=>{
    const r=await Promise.all([post('/costream/session',session),post('/costream/session',session)]);expect(r.map(x=>x.status).sort()).toEqual([200,201]);expect(r[0].body).toEqual(r[1].body);const b=r[0].body;
@@ -129,11 +134,13 @@ integration('Day 2 exact contracts',()=>{
    for(const name of ['nascon_active_ws_connections','nascon_active_streams_total','nascon_stream_bitrate_kbps','nascon_dlq_depth','nascon_qr_scans_total'])expect(r.text).toMatch(new RegExp('^'+name+' [0-9.]+$','m'));expect(r.text).toContain('nascon_dlq_depth 1');expect(r.text).toContain('nascon_qr_scans_total 1');
  });
  test('privacy wipes linked account, cart, tokens, queued notifications and private cache references',async()=>{
+   await post('/stream/key',keyBody);
    await post('/guest/cart-merge',cart);await pool.query("INSERT INTO day2_notifications(notification_id,recipient_id,topic,payload) VALUES('private','user-player','private','{\"email\":\"private@example.test\"}'); INSERT INTO day2_private_cache_refs VALUES('user-player','private-key')");
    const redis=new (require('../backend/node_modules/ioredis'))(process.env.TEST_REDIS_URL);await redis.set('private-key','private@example.test');
    const started=Date.now(),r=await request(app).delete('/audit/v1/privacy/user/player-alpha-1');expect(r.body).toEqual({user_id:'player-alpha-1',status:'anonymized',pii_retained:false,tokens_wiped:true});expect(Date.now()-started).toBeLessThan(1000);
    expect((await pool.query('SELECT * FROM day2_guest_tokens')).rowCount).toBe(0);expect((await pool.query('SELECT * FROM day2_private_cache_refs')).rowCount).toBe(0);expect((await pool.query("SELECT * FROM day2_notifications WHERE recipient_id='user-player'")).rowCount).toBe(0);
    expect(await redis.get('private-key')).toBeNull();await redis.quit();
+   expect((await pool.query("SELECT * FROM day2_stream_keys WHERE player_id='player-alpha-1'")).rowCount).toBe(0);
    expect((await request(app).post('/api/v1/login').send({email:'player@nascon.test',password:'Nascon@26'})).status).toBe(401);
    expect((await request(app).delete('/audit/v1/privacy/user/player-alpha-1')).status).toBe(200);
  });
