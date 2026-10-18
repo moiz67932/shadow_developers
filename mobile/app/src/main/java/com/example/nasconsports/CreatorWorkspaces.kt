@@ -109,7 +109,7 @@ fun MainActivity.nativeStreamKeys() {
         val ingest = infoPanel("Encoder endpoints", "Paste an ingest endpoint into your streaming software.", body)
         val endpoints = saved.optJSONObject("ingest_endpoints")
         for (kind in listOf("rtmp", "webrtc")) endpoints?.optString(kind)?.takeIf { it.isNotBlank() }?.let { endpoint ->
-            text(kind.uppercase() + " · " + mediaUrl(endpoint).substringBeforeLast('/') + "/••••", 11f, parent = ingest)
+            text(kind.uppercase() + " · " + mediaUrl(endpoint).replace(Regex("/live/[^/]+"), "/live/••••"), 11f, parent = ingest)
             inlineActions(ingest, listOf("Copy ${kind.uppercase()} URL" to { copyValue("Private ingest URL", mediaUrl(endpoint)) }))
         }
     }

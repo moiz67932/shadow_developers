@@ -12,7 +12,11 @@ import java.util.UUID
 // Creator operations require a live server; they never enter the Day 1 offline queue.
 fun MainActivity.creatorWrite(path: String, body: JSONObject, method: String = "POST", done: (JSONObject) -> Unit) {
     if (forcedOffline()) { notice("Reconnect and turn off Work offline to use creator controls."); return }
-    work({ api.call(path, body, method) }, done)
+    val client = ApiClient(api.base, api.token)
+    val requestOwner = owner
+    work({ client.call(path, body, method).also { result ->
+        if (path == "/api/v1/streams/key") SessionStore(this, "creator_keys").save(JSONObject().put("owner", requestOwner).put("key", result))
+    } }, done)
 }
 fun MainActivity.playerIdentity(): String = try {
     val claims = JSONObject(String(android.util.Base64.decode(api.token.split('.')[1], android.util.Base64.URL_SAFE or android.util.Base64.NO_WRAP)))

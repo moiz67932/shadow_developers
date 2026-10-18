@@ -1,0 +1,8 @@
+{
+  "measured_at": "2026-10-18T09:18:05.008Z",
+  "runtimeDay1EqualsPublicTestDefault": true,
+  "explicitJwtSecretConfigured": false,
+  "readOnlyForgedAdminBootstrapStatus": 200,
+  "privilegeEscalationReproduced": true,
+  "mutationPerformed": false
+}

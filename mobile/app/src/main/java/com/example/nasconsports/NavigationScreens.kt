@@ -32,9 +32,11 @@ fun MainActivity.restoreRoute(route: JSONObject) {
         "Product detail" -> args.optJSONObject("product")?.let { productScreen(it) } ?: storeScreen()
         "Cart & checkout" -> cartScreen()
         "Paid receipt" -> local.get("receipt:$owner")?.let { receiptScreen(it) } ?: storeScreen()
-        "Roster action" -> {
+        "Club roster" -> rosterScreen(args.optString("club"))
+        "Club profile" -> clubProfile(args.optString("club"))
+        "Roster player", "Roster action" -> {
             val roster = args.optJSONObject("roster"); val player = args.optJSONObject("player")
-            if (roster != null && player != null) rosterForm(roster, player) else rosterScreen()
+            if (roster != null && player != null) { if(route.optString("screen")=="Roster player")rosterPlayerScreen(roster,player)else rosterForm(roster, player) } else rosterScreen()
         }
         "Athlete Profile" -> athleteScreen(args.optString("athlete", prefs.getString("creator_athlete", "") ?: ""))
         "Live Arena" -> arenaScreen(args.optString("entity", defaultArenaEntity()))
