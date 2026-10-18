@@ -9,4 +9,4 @@ ENV CGO_ENABLED=0 GOMAXPROCS=2 GOMEMLIMIT=1GiB
 RUN go build -p 2 -tags kqueue -trimpath -ldflags="-s -w -X github.com/minio/minio/cmd.Version=2024-09-22T00:33:43Z -X github.com/minio/minio/cmd.ReleaseTag=RELEASE.2024-09-22T00-33-43Z -X github.com/minio/minio/cmd.CommitID=03e996320ebb887112fb2a15c6f27936e5f124a0" -o /minio .
 FROM node:20-alpine
 COPY --from=build /minio /usr/local/bin/minio
-ENTRYPOINT ["minio"]
+ENTRYPOINT ["/usr/local/bin/minio"]
