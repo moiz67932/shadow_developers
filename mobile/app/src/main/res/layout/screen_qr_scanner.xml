@@ -1,0 +1,12 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/scanner_root" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:background="@color/navy" android:padding="16dp">
+    <TextView style="@style/Arena.Label" android:text="NASCON ARENA 2026" />
+    <TextView style="@style/Arena.Title" android:text="Arena scanner" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:background="@drawable/bg_arena_glow" android:clipToOutline="true">
+        <TextureView android:id="@+id/scanner_preview" android:layout_width="match_parent" android:layout_height="match_parent" android:contentDescription="Live camera QR scanner" />
+        <ImageView android:layout_width="220dp" android:layout_height="220dp" android:layout_gravity="center" android:src="@drawable/qr_viewfinder" android:importantForAccessibility="no" />
+    </FrameLayout>
+    <TextView android:id="@+id/scanner_status" style="@style/Arena.Body" android:text="Align a NaSCon QR code inside the frame." android:layout_marginTop="16dp" android:accessibilityLiveRegion="polite" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/scanner_torch" style="@style/Arena.Button" android:text="Turn flashlight on" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/scanner_permission" style="@style/Arena.Secondary" android:text="Allow camera / retry" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/scanner_close" style="@style/Arena.Secondary" android:text="Back to link entry" />
+</LinearLayout>

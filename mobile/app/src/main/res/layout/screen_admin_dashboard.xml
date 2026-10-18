@@ -1,0 +1,7 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <include layout="@layout/view_arena_hero" />
+    <TextView style="@style/Arena.Label" android:text="TOURNAMENT OPERATIONS" />
+    <TextView android:id="@+id/admin_summary" style="@style/Arena.Body" />
+    <LinearLayout android:id="@+id/admin_actions" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/admin_refresh" style="@style/Arena.Secondary" android:text="Refresh dashboard" />
+</LinearLayout>

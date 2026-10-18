@@ -112,9 +112,10 @@ fun MainActivity.standingsScreen(){
 }
 
 fun MainActivity.matchScreen(id:String){
-    matchId=id;start("Match detail");val stamp=generation
+    start("Match detail");matchId=id;routeArgs.put("match",id);val stamp=generation
     sectionTitle("Match center","Live score, venue and authoritative event timeline")
     assetImage(R.drawable.match_arena,"Floodlit NaSCon match arena",126)
+    actionGrid(listOf(ArenaAction("Watch live", "Player and fan chat", R.drawable.ic_play_circle){arenaScreen(id)},ArenaAction("Match QR", "Share or export your match", R.drawable.ic_person){qrExportScreen(id)}))
     button("Refresh score"){matchScreen(id)}
     fetch("/audit/v1/score/$id"){m->
         val home=m.getJSONObject("home");val away=m.getJSONObject("away")

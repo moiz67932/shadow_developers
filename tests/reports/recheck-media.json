@@ -1,0 +1,58 @@
+{
+  "scope": "isolated database and services; existing test credentials; official DAY2_SALT NOT verified",
+  "measured_at": "2026-10-18T09:14:47.205Z",
+  "results": [
+    {
+      "name": "four independent RTMP publishers",
+      "passed": true,
+      "milliseconds": 562,
+      "evidence": {
+        "readyPublishers": 4
+      }
+    },
+    {
+      "name": "grid_4 actual API orchestration and composite HLS",
+      "passed": false,
+      "milliseconds": 7091,
+      "error": "Path readiness timed out: costream"
+    },
+    {
+      "name": "host disconnect metadata handoff under 1.5 seconds",
+      "passed": false,
+      "milliseconds": 3019,
+      "error": "Host did not hand off"
+    },
+    {
+      "name": "composite resumes after host loss",
+      "passed": false,
+      "milliseconds": 8011,
+      "error": "Path readiness timed out: costream"
+    },
+    {
+      "name": "actual live key revocation and old key rejection",
+      "passed": false,
+      "milliseconds": 1333,
+      "error": "Old key was not rejected"
+    },
+    {
+      "name": "stop composite and bounded cleanup",
+      "passed": true,
+      "milliseconds": 12,
+      "evidence": {
+        "compositeStopped": true
+      }
+    },
+    {
+      "name": "grid_2 actual composite",
+      "passed": false,
+      "milliseconds": 7096,
+      "error": "Path readiness timed out: costream"
+    },
+    {
+      "name": "spotlight control actual composite",
+      "passed": false,
+      "milliseconds": 8100,
+      "error": "Path readiness timed out: costream"
+    }
+  ]
+}

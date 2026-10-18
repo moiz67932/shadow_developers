@@ -1,0 +1,5 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="106dp" android:background="@drawable/bg_card" android:foreground="?attr/selectableItemBackground" android:clickable="true" android:focusable="true" android:orientation="vertical" android:padding="14dp">
+    <ImageView android:id="@+id/action_icon" android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_home" android:tint="@color/cyan" android:importantForAccessibility="no" />
+    <TextView android:id="@+id/action_title" style="@style/Arena.Body" android:textColor="@color/text_primary" android:textStyle="bold" android:layout_marginTop="10dp" android:layout_marginBottom="2dp" />
+    <TextView android:id="@+id/action_description" style="@style/Arena.Body" android:textSize="11sp" android:layout_marginBottom="0dp" />
+</LinearLayout>

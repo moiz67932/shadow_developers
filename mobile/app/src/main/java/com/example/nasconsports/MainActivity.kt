@@ -35,6 +35,7 @@ class MainActivity: AppCompatActivity() {
     var matchId=""
     var arenaVideo: VideoView?=null
     var busy=false
+    var busyGeneration=-1
     lateinit var remembered: SessionStore
     var offlineChoice=false
     fun forcedOffline()=prefs.getBoolean("offline",false)||android.provider.Settings.Global.getInt(contentResolver,android.provider.Settings.Global.AIRPLANE_MODE_ON,0)==1
@@ -69,7 +70,7 @@ class MainActivity: AppCompatActivity() {
         online=!forcedOffline();if(session!=null){orderRequest=local.get("checkout:$owner")?.takeIf{it.has("order_id")};val savedCart=local.get("cart:$owner");savedCart?.keys()?.forEach{cart[it]=savedCart.optInt(it)}};if(session==null)login() else {data=local.get("bootstrap:$owner")?:JSONObject();refresh {if(incomingEntity!=null)go(saved)else pendingRoute?.let { restoringBack=true;restoreRoute(it);restoringBack=false;pendingRoute=null }?:go(saved)} }
     }
     override fun onSaveInstanceState(out:Bundle){super.onSaveInstanceState(out);out.putString("screen",screen);out.putString("route",JSONObject().put("screen",screen).put("args",routeArgs).toString());out.putString("history",JSONArray(history.toList()).toString());out.putString("match",matchId);out.putString("league",selectedLeague);if(session!=null)local.put("cart:$owner",JSONObject(cart.toMap()))}
-    override fun onPause(){arenaVideo?.pause();super.onPause()}
+    override fun onPause(){if(screen=="VOD Player")routeArgs.put("position",arenaVideo?.currentPosition?:0);arenaVideo?.pause();super.onPause()}
     override fun onDestroy(){arenaVideo?.stopPlayback();super.onDestroy();executor.shutdown()}
     fun back(){
         if(screen=="Sign in")finish()
@@ -78,6 +79,7 @@ class MainActivity: AppCompatActivity() {
         else {val previous=history.removeLast();restoringBack=true;restoreRoute(previous);restoringBack=false}
     }
     fun start(title:String){
+        if(screen=="VOD Player")routeArgs.put("position",arenaVideo?.currentPosition?:0)
         arenaVideo?.stopPlayback();arenaVideo=null
         val roots=setOf("Home","Fixtures","Standings","Store","Profile")
         if(!restoringBack&&screen!=title&&screen!="Sign in"&&session!=null){
@@ -85,12 +87,18 @@ class MainActivity: AppCompatActivity() {
             else {if(history.size>20)history.removeFirst();history.addLast(JSONObject().put("screen",screen).put("args",JSONObject(routeArgs.toString())))}
         }
         routeArgs=JSONObject()
-        generation++;screen=title;findViewById<TextView>(R.id.title).text=title.uppercase();content.removeAllViews();findViewById<ScrollView>(R.id.scroll).scrollTo(0,0)
+        generation++;screen=title;findViewById<View>(R.id.global_search).contentDescription=if(session==null)"Create account"else"Search recordings";findViewById<TextView>(R.id.title).text=title.uppercase();content.removeAllViews();findViewById<ScrollView>(R.id.scroll).scrollTo(0,0)
         val topLevel=title in listOf("Home","Fixtures","Standings","Store","Profile","Sign in")
         findViewById<View>(R.id.back).visibility=if(topLevel)View.INVISIBLE else View.VISIBLE
         nav.visibility=if(session==null)View.GONE else View.VISIBLE;nav.removeAllViews()
         if(session!=null){
-            val selectedTab=when(title){"Match detail"->"Fixtures";"Product detail","Cart & checkout","Paid receipt"->"Store";"Club roster","Roster action","Sync queue","Server settings","Active Stream Director","Match Telemetry","Admin dashboard","VOD Archive","VOD Player","Creator tools","Broadcast Studio","Stream Key Controls","Co-stream Lobby","Co-stream Host Room","QR Scanner","QR Share & Export","Athlete Profiles","Athlete Profile","Live Arena"->"Home";else->title}
+            val selectedTab=when(title){
+                "Match detail"->"Fixtures"
+                "Product detail","Cart & checkout","Paid receipt"->"Store"
+                "Live Arena","VOD Archive","VOD Player"->"Home"
+                "Home","Fixtures","Standings","Store","Profile"->title
+                else->"Profile"
+            }
             val items=listOf(Triple(R.drawable.ic_home,"Home","Home"),Triple(R.drawable.ic_calendar,"Fixtures","Fixtures"),Triple(R.drawable.ic_standings,"Standings","Standings"),Triple(R.drawable.ic_bag,"Store","Store"),Triple(R.drawable.ic_person,"Profile","Profile"))
             for((icon,label,target) in items){
                 val selected=label==selectedTab
@@ -112,8 +120,28 @@ class MainActivity: AppCompatActivity() {
     fun picker(label:String,values:List<String>,parent:LinearLayout=content):Spinner{text(label,13f,true,parent);return Spinner(this).apply{adapter=ArrayAdapter(this@MainActivity,android.R.layout.simple_spinner_dropdown_item,if(values.isEmpty())listOf("No choices available")else values);minimumHeight=dp(50);parent.addView(this,LinearLayout.LayoutParams(-1,dp(50)))}}
     fun notice(message:String){androidx.appcompat.app.AlertDialog.Builder(this).setTitle("NaSCon Sports").setMessage(message).setPositiveButton("OK",null).show()}
     fun confirm(message:String,action:()->Unit){androidx.appcompat.app.AlertDialog.Builder(this).setTitle("Confirm action").setMessage(message).setNegativeButton("Cancel",null).setPositiveButton("Confirm"){_,_->action()}.show()}
-    fun work(task:()->JSONObject,done:(JSONObject)->Unit,failed:((Exception)->Unit)?=null){if(busy)return;busy=true;progress.visibility=View.VISIBLE;banner("Connecting…");val stamp=generation;executor.execute {try{val r=task();runOnUiThread{if(isDestroyed)return@runOnUiThread;busy=false;progress.visibility=View.GONE;online=true;prefs.edit().putString("last",java.text.DateFormat.getDateTimeInstance().format(java.util.Date())).apply();banner();if(stamp==generation)done(r)}}catch(e:Exception){runOnUiThread{if(isDestroyed)return@runOnUiThread;busy=false;progress.visibility=View.GONE;if(e !is ApiError)online=false;banner();if(stamp==generation){if(failed!=null)failed(e)else{val message=if(e is ApiError)e.message?:e.code else "Could not reach your server. Check USB forwarding or hotspot, then retry.";notice(message)}}}}}}
-    fun fetch(path:String,done:(JSONObject)->Unit){val key="$owner:$path";if(forcedOffline()){online=false;banner();val cached=local.get(key);if(cached!=null)done(cached)else{card("Not saved on this device","Load this screen online first.");button("Retry"){go(screen)}};return};work({val r=api.call(path);local.put(key,r);r},done,{e->val cached=local.get(key);if(cached!=null){online=false;banner();done(cached)}else{card("Unable to load",if(e is ApiError)e.message?:"Request failed" else "Connect to your server to load this screen for the first time.");button("Retry"){go(screen)}}})}
+    fun work(task:()->JSONObject,done:(JSONObject)->Unit,failed:((Exception)->Unit)?=null){
+        if(busy&&busyGeneration==generation)return
+        busy=true;busyGeneration=generation;progress.visibility=View.VISIBLE;banner("Connecting…")
+        val stamp=generation
+        executor.execute {
+            try {
+                val result=task()
+                runOnUiThread {
+                    if(isDestroyed)return@runOnUiThread
+                    if(stamp==busyGeneration){busy=false;progress.visibility=View.GONE}
+                    if(stamp==generation){online=true;prefs.edit().putString("last",java.text.DateFormat.getDateTimeInstance().format(java.util.Date())).apply();banner();done(result)}
+                }
+            }catch(error:Exception){
+                runOnUiThread {
+                    if(isDestroyed)return@runOnUiThread
+                    if(stamp==busyGeneration){busy=false;progress.visibility=View.GONE}
+                    if(stamp==generation){if(error !is ApiError)online=false;banner();if(failed!=null)failed(error)else notice(if(error is ApiError)error.message?:error.code else "Could not reach your server. Check USB forwarding or hotspot, then retry.")}
+                }
+            }
+        }
+    }
+    fun fetch(path:String,done:(JSONObject)->Unit){val key="$owner:$path";if(forcedOffline()){online=false;banner();val cached=local.get(key);if(cached!=null)done(cached)else{card("Not saved on this device","Load this screen online first.");button("Retry"){restoreRoute(JSONObject().put("screen",screen).put("args",routeArgs))}};return};work({val r=api.call(path);local.put(key,r);r},done,{e->val cached=local.get(key);if(cached!=null){online=false;banner();done(cached)}else{card("Unable to load",if(e is ApiError)e.message?:"Request failed" else "Connect to your server to load this screen for the first time.");button("Retry"){restoreRoute(JSONObject().put("screen",screen).put("args",routeArgs))}}})}
     fun refresh(done:()->Unit){if(forcedOffline()){online=false;data=local.get("bootstrap:$owner")?:JSONObject();done();banner();return};work({val r=api.call("/api/v1/bootstrap");local.put("bootstrap:$owner",r);r},{r->data=r;done()},{e->if(e is ApiError&&e.code=="UNAUTHENTICATED"){sessions.clear();session=null;api.token="";login();notice("Your session expired. Please sign in again.")}else{data=local.get("bootstrap:$owner")?:JSONObject();done()}})}
     fun login(){signInScreen()}
     fun settings(){start("Server settings");card("Connect your arena","USB: http://127.0.0.1:8080\nEmulator: http://10.0.2.2:8080\nHotspot: your configured laptop address");val url=field("Server URL",api.base,InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI)
