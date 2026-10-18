@@ -33,6 +33,7 @@ class MainActivity: AppCompatActivity() {
     var screen="Home"
     var selectedLeague="demo-alpha-cup"
     var matchId=""
+    var arenaVideo: VideoView?=null
     var busy=false
     lateinit var remembered: SessionStore
     var offlineChoice=false
@@ -60,20 +61,23 @@ class MainActivity: AppCompatActivity() {
         findViewById<View>(R.id.settings).setOnClickListener { settings() };findViewById<View>(R.id.back).setOnClickListener { back() }
         onBackPressedDispatcher.addCallback(this,object:OnBackPressedCallback(true){override fun handleOnBackPressed(){back()}})
         selectedLeague=state?.getString("league")?:"demo-alpha-cup";matchId=state?.getString("match")?:""
-        val saved=state?.getString("screen")?:"Home"
+        val incomingEntity=intent.getStringExtra("arena_entity"); if(incomingEntity!=null&&validEntity(incomingEntity))prefs.edit().putString("creator_entity",incomingEntity).apply()
+        val saved=if(incomingEntity!=null&&validEntity(incomingEntity))"Live Arena" else state?.getString("screen")?:"Home"
         online=!forcedOffline();if(session!=null){orderRequest=local.get("checkout:$owner")?.takeIf{it.has("order_id")};val savedCart=local.get("cart:$owner");savedCart?.keys()?.forEach{cart[it]=savedCart.optInt(it)}};if(session==null)login() else {data=local.get("bootstrap:$owner")?:JSONObject();refresh {go(saved)} }
     }
     override fun onSaveInstanceState(out:Bundle){super.onSaveInstanceState(out);out.putString("screen",screen);out.putString("match",matchId);out.putString("league",selectedLeague);if(session!=null)local.put("cart:$owner",JSONObject(cart.toMap()))}
-    override fun onDestroy(){super.onDestroy();executor.shutdown()}
+    override fun onPause(){arenaVideo?.pause();super.onPause()}
+    override fun onDestroy(){arenaVideo?.stopPlayback();super.onDestroy();executor.shutdown()}
     fun back(){if(screen=="Sign in"){finish()}else if(session==null)login()else if(screen=="Home"){moveTaskToBack(true)}else{val previous=if(history.isEmpty())"Home"else history.removeLast();restoringBack=true;when(previous){"Match detail"->matchScreen(matchId);"Club roster","Roster action"->rosterScreen();"Cart & checkout","Product detail"->cartScreen();"Server settings"->settings();else->go(previous)};restoringBack=false}}
     fun start(title:String){
+        arenaVideo?.stopPlayback();arenaVideo=null
         if(!restoringBack&&screen!=title&&screen!="Sign in"&&session!=null){if(history.size>20)history.removeFirst();history.addLast(screen)}
         generation++;screen=title;findViewById<TextView>(R.id.title).text=title.uppercase();content.removeAllViews();findViewById<ScrollView>(R.id.scroll).scrollTo(0,0)
         val topLevel=title in listOf("Home","Fixtures","Standings","Store","Profile","Sign in")
         findViewById<View>(R.id.back).visibility=if(topLevel)View.INVISIBLE else View.VISIBLE
         nav.visibility=if(session==null)View.GONE else View.VISIBLE;nav.removeAllViews()
         if(session!=null){
-            val selectedTab=when(title){"Match detail"->"Fixtures";"Product detail","Cart & checkout","Paid receipt"->"Store";"Club roster","Roster action","Sync queue","Server settings"->"Profile";else->title}
+            val selectedTab=when(title){"Match detail"->"Fixtures";"Product detail","Cart & checkout","Paid receipt"->"Store";"Club roster","Roster action","Sync queue","Server settings","Active Stream Director","Match Telemetry","Creator tools","Broadcast Studio","Stream Key Controls","Co-stream Lobby","Co-stream Host Room","QR Scanner","QR Share & Export","Athlete Profiles","Athlete Profile","Live Arena"->"Profile";else->title}
             val items=listOf(Triple(R.drawable.ic_home,"Home","Home"),Triple(R.drawable.ic_calendar,"Fixtures","Fixtures"),Triple(R.drawable.ic_standings,"Standings","Standings"),Triple(R.drawable.ic_bag,"Store","Store"),Triple(R.drawable.ic_person,"Profile","Profile"))
             for((icon,label,target) in items){
                 val selected=label==selectedTab
@@ -137,7 +141,9 @@ class MainActivity: AppCompatActivity() {
         button("Save server"){valid()?.let{v->if(v!=api.base){prefs.edit().putString("server",v).commit();api.base=v;sessions.clear();session=null;api.token="";data=JSONObject();cart.clear();login();notice("Server saved. Sign in to this server.")}else notice("Server saved.")}}
         button("Test connection"){valid()?.let{v->work({ApiClient(v).call("/health")},{notice("Connection successful: ${it.optString("status")}");settings()})}};card("Last successful connection",prefs.getString("last","No successful connection yet")!!);text("For USB, run adb reverse tcp:8080 tcp:8080 on your laptop. If hotspot HTTP is blocked, use USB or HTTPS; only explicitly permitted development hosts allow cleartext.",14f)
     }
-    fun go(name:String){when(name){"Fixtures"->fixturesScreen();"Standings"->standingsScreen();"Store"->storeScreen();"Profile"->profileScreen();"Match detail"->matchScreen(matchId);"Club roster"->rosterScreen();"Sync queue"->queueScreen();else->home()}}
+    @Deprecated("Scanner activity result compatibility")
+    override fun onActivityResult(requestCode:Int,resultCode:Int,result:android.content.Intent?){super.onActivityResult(requestCode,resultCode,result);if(requestCode==2031&&resultCode==RESULT_OK)result?.getStringExtra("SCAN_RESULT")?.let{openArenaLink(it)}}
+    fun go(name:String){when(name){"Active Stream Director"->streamDirector();"Match Telemetry"->matchTelemetry();"Creator tools"->creatorHub();"Broadcast Studio"->broadcastStudio();"Stream Key Controls"->streamKeysScreen();"Co-stream Lobby"->costreamLobby();"Co-stream Host Room"->hostRoom();"QR Scanner"->qrScannerScreen();"QR Share & Export"->qrExportScreen();"Athlete Profiles"->athleteDirectory();"Athlete Profile"->athleteScreen(prefs.getString("creator_athlete","player-alpha-1")!!);"Live Arena"->arenaScreen(prefs.getString("creator_entity","match-m1")!!);"Fixtures"->fixturesScreen();"Standings"->standingsScreen();"Store"->storeScreen();"Profile"->profileScreen();"Match detail"->matchScreen(matchId);"Club roster"->rosterScreen();"Sync queue"->queueScreen();else->home()}}
     fun home(){
         start("Home");sectionTitle("Matchday arena","Live scores, big clashes and tournament operations")
         card("●  NASCON NATIONAL CUP '26","ARENA VERIFIED  •  ${if(online)"SYNCED NOW"else"OFFLINE CACHE"}")
@@ -153,12 +159,13 @@ class MainActivity: AppCompatActivity() {
         val upcoming=all.filter{it.optString("status")=="upcoming"}.take(2)
         if(upcoming.isNotEmpty()){sectionTitle("Big clashes today","Tap a fixture to open Match Center");upcoming.forEachIndexed{i,f->fixtureCard(f,i+1)}}
         sectionTitle("Arena access","Tournament tools for your role")
+        button("Creator tools • Live, QR & athletes"){creatorHub()}
         button("Explore fixtures"){go("Fixtures")};button("View standings"){go("Standings")};button("Club & roster"){rosterScreen()};button("Store & merchandise"){go("Store")};button("Offline changes & sync"){queueScreen()};button("Refresh workspace"){refresh{home()}}
         sectionTitle("Latest from NaSCon","Matchday highlights")
         assetImage(R.drawable.highlight_goal,"Electrifying last-minute goal",112);assetImage(R.drawable.highlight_trophy,"Championship trophy celebration",112)
         if(canScore)button("Prepare competition demonstration"){confirm("Create the tenant's demonstration league and roster once? Existing purchases and roster actions will be preserved."){work({api.call("/api/v1/demo/prepare",JSONObject())},{refresh{home()}})}}
         if(fixtures.length()==0)card("Your workspace is ready","An organizer can prepare the competition demonstration to populate matches. Refresh after setup.")
     }
-    fun profileScreen(){start("Profile");card("Your identity",user.optString("email")+"\n"+role.replace('_',' ')+"\nTenant: "+user.optString("tenant_id"));button("Club & roster"){rosterScreen()};button("Offline changes & sync"){queueScreen()};button("Server settings"){settings()};button("Sign out"){confirm("Sign out? Pending changes stay on this device, linked to this account and server."){sessions.clear();session=null;api.token="";data=JSONObject();cart.clear();orderRequest=null;history.clear();login()}}}
+    fun profileScreen(){start("Profile");button("Creator tools • Live, QR & athletes"){creatorHub()};card("Your identity",user.optString("email")+"\n"+role.replace('_',' ')+"\nTenant: "+user.optString("tenant_id"));button("Club & roster"){rosterScreen()};button("Offline changes & sync"){queueScreen()};button("Server settings"){settings()};button("Sign out"){confirm("Sign out? Pending changes stay on this device, linked to this account and server."){sessions.clear();session=null;api.token="";data=JSONObject();cart.clear();orderRequest=null;history.clear();login()}}}
 }
 fun JSONArray.objects(): List<JSONObject> = (0 until length()).mapNotNull{optJSONObject(it)}

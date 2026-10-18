@@ -47,6 +47,7 @@ class Day2LiveActivity : Activity() {
         root.addView(video, LinearLayout.LayoutParams(-1, 640))
         root.addView(Button(this).apply { text = "Open full guest arena"; setOnClickListener { val route = if (entity.startsWith("cs-")) "/web/costream/$entity" else if(entity.startsWith("match-")) "/web/matches/$entity/live" else if(entity.startsWith("club-")) "/web/clubs/$entity" else "/web/players/$entity"; startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(server + route))) } })
         root.addView(Button(this).apply { text = "Enable live notifications"; setOnClickListener { if(Build.VERSION.SDK_INT >= 33) requestPermissions(arrayOf("android.permission.POST_NOTIFICATIONS"), 2026) } })
+        root.addView(Button(this).apply { text = "Native chat, merchandise & athlete profile"; setOnClickListener { startActivity(Intent(this@Day2LiveActivity, MainActivity::class.java).putExtra("arena_entity", entity)) } })
         io.execute {
             try {
                 val context = JSONObject(URL("$server/web/api/context/$entity").readText())
