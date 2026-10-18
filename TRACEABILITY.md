@@ -1,12 +1,32 @@
 # Traceability matrix
 
+## Day 2 emergency integration checkpoint
+
+| Requirement | Source | Genuine evidence / remaining limit |
+|---|---|---|
+| FR-3.1 athlete profiles/social graph | `routes/guest-web.js` | Public event-derived profile, club/upcoming/VOD index; concurrent explicit follow/unfollow in `tests/day3.web.test.js`. Individual stats count explicit event attribution only. |
+| FR-3.2 media ingest/playback/recording | `services/media-sessions.js`, `services/object-storage.js`, MediaMTX configuration | `tests/media/smoke.js`: actual RTMP, HLS segment bytes, Chrome WHEP-decoded frames and MinIO recording round-trip. Official-salt key revocation at the media boundary remains unverified. |
+| FR-3.3 co-stream moderation/composition | `services/media-sessions.js`, `routes/guest-web.js` | Real grid_2/grid_4/spotlight filter execution; signed invite/account checks, persistent mute/spotlight/kick and deterministic API handoff in `tests/day4.controls.test.js`. Four independent publishers, physical disconnect timing and automatic restart are NOT end-to-end verified. |
+| FR-4.1–4.4 / §6.2 guest web | `backend/web/`, `routes/guest-web.js` | Three parallel Chrome/Chrome/Firefox journeys; all nine selectors; real WebSocket score updates; guest write denial; real registration, merge and protected server-cart checkout. |
+| FR-5.2 durable notifications | `services/notifications.js`, `workers/worker.js`, migration 007 | `tests/day6.notifications.test.js`: authenticated SSE score delivery, scheduled three-attempt retry and one durable DLQ entry. Co-stream-invite and order-status notification propagation remain incomplete. |
+| §6.3 native source / Appium | `Day2LiveActivity.kt`, Android manifest, `tests/appium/` | Isolated signed-out deep-link routing, native VideoView/SSE/notifications source; manifest parses. No Gradle, APK build or device execution. Appium report records one real skipped test, NOT a pass. QR capture/native broadcast UI remain incomplete. |
+| NFR-2 / §6.4 load | `tests/k6_load.js` | `tests/reports/k6-summary.json`: published 550-VU/15-second workload, 0% HTTP failures, ~203 ms aggregate p95 on isolated QA. Individual long-tail requests exceeded this aggregate target. |
+| §1.3 CI / final safety | `.github/workflows/autograde.yml` | CI configured for ancestry, contracts, Grid and k6; actual remote CI/clean-machine startup not verified. Configure repository secrets DAY1_SALT/DAY2_SALT and organizer-locked DAY1_BASE_SHA variable. |
+
+Additional acceptance reports: `tests/reports/final-verification.json`,
+`phase3-web.json`, `phase4-controls.json`, `phase6-notifications.json`,
+`phase7-checkout.json`, `selenium-report.xml`, `media-smoke.json` and
+`appium-report.xml`. `scripts/coverage-day2.js` now includes the expanded media,
+storage, web and notification helpers in module denominators; do not substitute
+earlier narrower coverage figures for this expanded measurement.
+
 ## Day 2 Phase 2 contract checkpoint
 
 | Contract | Implementation | Focused evidence |
 |---|---|---|
-| §5.3 key lifecycle / Appendix A signing | `backend/src/domain/streaming/index.js`, `utils/day2-sign.js`, `services/media-control.js` | `tests/day2.contract.test.js`, `tests/day2.media-control.test.js`: independent Python HMAC, public vectors, ten rotations, cross-account collision, RTMP/WebRTC kick requests |
-| §5.4 co-stream state machine | `backend/src/domain/costream/index.js`, migrations `006_costream_replay_records.sql` | Concurrent initialization, host drop, zero participants, request-specific replay, capacity/validation precedence |
-| §5.5–5.6 dynamic QR / exports | `backend/src/domain/qr_guest/index.js` | Stable URL/live-to-VOD transitions, all four entity types, private analytics, real SVG/PNG/PDF bytes |
+| §5.4 key lifecycle / Appendix A signing | `backend/src/domain/streaming/index.js`, `utils/day2-sign.js`, `services/media-control.js` | `tests/day2.contract.test.js`, `tests/day2.media-control.test.js`: independent Python HMAC, public vectors, ten rotations, cross-account collision, RTMP/WebRTC kick requests |
+| §5.5 co-stream state machine | `backend/src/domain/costream/index.js`, migrations `006_costream_replay_records.sql` | Concurrent initialization, host drop, zero participants, request-specific replay, capacity/validation precedence |
+| §5.6 dynamic QR / exports | `backend/src/domain/qr_guest/index.js` | Stable URL/live-to-VOD transitions, all four entity types, private analytics, real SVG/PNG/PDF bytes |
 | §5.7 cart merge | `backend/src/domain/qr_guest/index.js` | Lost-ACK concurrent retry, stock rollback, authoritative prices, incompatible token reuse, guest-write guard |
 | §5.8 moderation / DLQ | `backend/src/domain/moderation_dlq/index.js`, migration `005_chat_rate_window.sql` | Ten simultaneous retries, deduplicated actions, obfuscation/flood/rate window, three persisted attempts and durable dead letters |
 | §5.9 metrics / privacy | `backend/src/domain/observability/index.js`, `services/privacy-cache.js` | Actual SQL counters; account credentials, guest/stream tokens, carts, notifications and isolated Redis private key erased |

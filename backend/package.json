@@ -42,6 +42,11 @@
       "src/services/media-control.js",
       "src/services/privacy-cache.js",
       "src/services/realtime.js",
+      "src/services/media-sessions.js",
+      "src/services/object-storage.js",
+      "src/services/notifications.js",
+      "src/services/qr-cache.js",
+      "src/routes/guest-web.js",
       "src/utils/day2-sign.js",
       "src/routes/day2.js"
     ],

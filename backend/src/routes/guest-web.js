@@ -26,12 +26,27 @@ router.post('/api/v1/register',wrap(async(req,res)=>{
  res.status(201).json({token:require('../domain/rbac').sessionToken(user),user:{user_id:user.user_id,role:user.role,tenant_id:user.tenant_id}});
 }));
 router.post('/api/v1/cart/merge',wrap(async(req,res)=>{const u=await actor(req);res.json(await require('../domain/qr_guest').merge({...req.body,registered_user_id:u.player_id??u.user_id},require('../domain/rbac').authenticateSession(req.headers.authorization)));}));
+router.post('/api/v1/checkout',wrap(async(req,res)=>{
+ const user=await actor(req),b=parse(z.object({order_id:id}),req.body),owner=user.player_id??user.user_id;
+ const result=await require('../services/day2-db').tx('checkout-cart:'+owner,async c=>{
+  const previous=(await c.query('SELECT request FROM orders WHERE order_id=$1',[b.order_id])).rows[0];
+  if(previous&&previous.request.customer_id!==owner)fail(403,'FORBIDDEN','Order belongs to another member.');
+  const items=previous?.request.items??(await c.query('SELECT variant_id,quantity FROM day2_cart_items WHERE user_id=$1 ORDER BY variant_id',[owner])).rows;
+  if(!items.length)fail(400,'VALIDATION_ERROR','Server cart is empty.',{fields:['cart']});
+  const paid=await require('../domain/store').checkout(previous?.request??{order_id:b.order_id,customer_id:owner,items,payment:{token:'tok_success'}});
+  const applied=await c.query('INSERT INTO day2_cart_checkouts(order_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING order_id',[b.order_id,owner]);
+  if(applied.rowCount){await c.query('SELECT user_id FROM day2_carts WHERE user_id=$1 FOR UPDATE',[owner]);for(const item of items){await c.query('DELETE FROM day2_cart_items WHERE user_id=$1 AND variant_id=$2 AND quantity<=$3',[owner,item.variant_id,item.quantity]);await c.query('UPDATE day2_cart_items SET quantity=quantity-$3 WHERE user_id=$1 AND variant_id=$2',[owner,item.variant_id,item.quantity]);}}
+  return paid;
+ });res.status(result.status).json(result.body);
+}));
 router.get('/api/v1/players/:id/profile',wrap(async(req,res)=>{
  const s=await getState(),p=require('../services/day2-db').players(s).find(p=>p.player_id===req.params.id&&!p.anonymized);if(!p)fail(404,'PLAYER_NOT_FOUND','Player not found.');
  const matches=Object.keys(s.matches).map(mid=>require('../domain/scoring').project(s,mid)).filter(m=>[m.home.team_id,m.away.team_id].includes(p.club_id));
+ const attributed=matches.flatMap(m=>m.events.filter(e=>!e.compensated&&[e.payload.player_id,e.payload.athlete_id].includes(p.player_id)).map(e=>({...e,match_id:m.match_id,sport_id:m.sport_id})));
+ const statistics={attributed_matches:new Set(attributed.map(e=>e.match_id)).size,attributed_events:attributed.length,goals:attributed.filter(e=>e.type==='score'&&e.payload.event_type==='goal').length,points:attributed.filter(e=>e.type==='score').reduce((n,e)=>n+(s.sports[e.sport_id]?.scoring_events[e.payload.event_type]?.points??0),0)};
  const followers=Number((await pool.query('SELECT count(*) AS n FROM day2_follows WHERE athlete_id=$1',[p.player_id])).rows[0].n);
  const vods=(await pool.query('SELECT vod_id,created_at FROM day2_vods WHERE player_id=$1 ORDER BY created_at DESC',[p.player_id])).rows;
- res.json({player_id:p.player_id,club:s.clubs.find(c=>c.club_id===p.club_id),career:{club_match_records:matches.filter(m=>m.status==='completed'),record_scope:'club affiliation; individual attribution only when present in event payload'},upcoming:matches.filter(m=>m.status==='upcoming'),followers,vods});
+ res.json({player_id:p.player_id,club:s.clubs.find(c=>c.club_id===p.club_id),career:{...statistics,club_match_records:matches.filter(m=>m.status==='completed'),record_scope:'Individual statistics count explicit player_id/athlete_id attribution only; unrecorded appearances are not inferred.'},upcoming:matches.filter(m=>m.status==='upcoming'),followers,vods});
 }));
 router.put('/api/v1/players/:id/follow',wrap(async(req,res)=>{const u=await actor(req),b=parse(z.object({following:z.boolean()}),req.body),p=require('../services/day2-db').players(await getState()).find(p=>p.player_id===req.params.id&&!p.anonymized);if(!p)fail(404,'PLAYER_NOT_FOUND','Player not found.');const result=await require('../services/day2-db').tx('follow:'+p.player_id,async c=>{if(b.following)await c.query('INSERT INTO day2_follows(follower_id,athlete_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[u.user_id,p.player_id]);else await c.query('DELETE FROM day2_follows WHERE follower_id=$1 AND athlete_id=$2',[u.user_id,p.player_id]);return Number((await c.query('SELECT count(*) AS n FROM day2_follows WHERE athlete_id=$1',[p.player_id])).rows[0].n);});res.json({athlete_id:p.player_id,following:b.following,followers:result});}));
 router.get('/api/v1/chat/:room',wrap(async(req,res)=>{parse(id,req.params.room);const rows=(await pool.query("SELECT sequence,payload->'output'->'result' AS message FROM day2_chat_messages WHERE chat_room_id=$1 AND sequence>$2 ORDER BY sequence LIMIT 100",[req.params.room,Math.max(0,Number(req.query.after)||0)])).rows;res.json({messages:rows.filter(r=>r.message).map(r=>({...r.message,sequence:Number(r.sequence)}))});}));

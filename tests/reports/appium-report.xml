@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="Appium deep links" tests="1" failures="0" errors="0" skipped="1"><testcase name="test_match_and_stream_external_intents (test_mobile_deeplink.MobileDeepLinks.test_match_and_stream_external_intents)"><skipped message="Matching Day 2 APK/device not verified; no build is performed" /></testcase></testsuite>

@@ -1,5 +1,5 @@
 const {append}=require('../domain/scoring');
-const tables=['day2_cart_merges','day2_cart_items','day2_carts','day2_guest_tokens','day2_stream_keys','day2_chat_messages','day2_moderator_actions','day2_chat_rooms','day2_costream_replays','day2_costream_participants','day2_costream_sessions','day2_qr_scan_buckets','day2_qr_links','day2_notification_dlq','day2_notifications','day2_follows','day2_vods','day2_private_cache_refs'];
+const tables=['day2_cart_checkouts','day2_cart_merges','day2_cart_items','day2_carts','day2_guest_tokens','day2_stream_keys','day2_chat_messages','day2_moderator_actions','day2_chat_rooms','day2_costream_replays','day2_costream_participants','day2_costream_sessions','day2_qr_scan_buckets','day2_qr_links','day2_notification_dlq','day2_notifications','day2_follows','day2_vods','day2_private_cache_refs'];
 const demoOwnership={
   'user-admin':{},
   'user-organizer':{league_id:'league-alpha-1',league_ids:['league-alpha-1']},

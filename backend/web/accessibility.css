@@ -1,0 +1,1 @@
+button,input,select{min-height:48px}button,a{min-width:48px}a{display:inline-flex;align-items:center;min-height:48px}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #a4d7ff;outline-offset:3px}

@@ -34,7 +34,7 @@ jobs:
           python3 -m unittest discover -s tests/selenium -p test_grid_infrastructure.py
       - name: Isolated backend contracts and measured module coverage
         run: |
-          sh scripts/test-integration.sh --runTestsByPath ../tests/day2.contract.test.js ../tests/day2.realtime.test.js ../tests/day2.media-control.test.js ../tests/day3.web.test.js --coverage
+          sh scripts/test-integration.sh --runTestsByPath ../tests/day2.contract.test.js ../tests/day2.realtime.test.js ../tests/day2.media-control.test.js ../tests/day3.web.test.js ../tests/day4.controls.test.js ../tests/day6.notifications.test.js ../tests/day7.checkout.test.js --coverage
           node scripts/coverage-day2.js
       - name: Guest Chrome and Firefox journeys
         run: python3 -m unittest discover -s tests/selenium -p test_guest_grid.py

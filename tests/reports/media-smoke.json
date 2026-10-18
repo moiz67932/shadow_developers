@@ -1,8 +1,13 @@
 {
-  "measured_at": "2026-10-18T08:35:05.815Z",
+  "measured_at": "2026-10-18T08:47:37.001Z",
   "actualRtmpPublished": true,
   "hlsManifest": true,
   "hlsSegmentBytes": 27608,
+  "webRtcPlayback": {
+    "decoded": true,
+    "time": 0.259,
+    "width": 320
+  },
   "vod": {
     "vodStoredAndRetrieved": true,
     "bytes": 395031

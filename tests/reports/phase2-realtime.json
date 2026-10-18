@@ -1,6 +1,6 @@
 {
-  "measured_at": "2026-10-18T08:42:26.585Z",
+  "measured_at": "2026-10-18T08:50:04.081Z",
   "realtimeClients": 25,
-  "p95_ms": 39,
-  "max_ms": 40
+  "p95_ms": 37,
+  "max_ms": 38
 }
