@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-variant": "#2f3543", "inverse-surface": "#dde2f5", "on-primary-fixed-variant": "#003ea8", "surface-tint": "#b4c5ff", "primary": "#b4c5ff", "surface-dim": "#0d1320", "on-secondary": "#003543", "surface-container-highest": "#2f3543", "tertiary": "#7bd0ff", "tertiary-fixed-dim": "#7bd0ff", "error-container": "#93000a", "on-primary": "#002a78", "surface": "#0d1320", "on-secondary-fixed-variant": "#004e60", "tertiary-fixed": "#c4e7ff", "inverse-primary": "#0053db", "primary-container": "#2563eb", "surface-container-low": "#161b29", "tertiary-container": "#00759f", "primary-fixed": "#dbe1ff", "background": "#0d1320", "surface-container-lowest": "#080e1b", "outline-variant": "#434655", "primary-fixed-dim": "#b4c5ff", "secondary-container": "#00d2ff", "on-background": "#dde2f5", "surface-container-high": "#242a38", "on-error": "#690005", "on-primary-container": "#eeefff", "surface-bright": "#333948", "on-tertiary-container": "#e1f2ff", "on-secondary-fixed": "#001f28", "secondary": "#a5e7ff", "outline": "#8d90a0", "on-tertiary-fixed": "#001e2c", "on-primary-fixed": "#00174b", "surface-container": "#1a1f2d", "secondary-fixed-dim": "#47d6ff", "on-surface-variant": "#c3c6d7", "on-secondary-container": "#00566a", "on-tertiary-fixed-variant": "#004c69", "inverse-on-surface": "#2a303f", "secondary-fixed": "#b6ebff", "on-surface": "#dde2f5", "on-tertiary": "#00354a", "on-error-container": "#ffdad6", "error": "#ffb4ab" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "1rem", "space-xs": "0.25rem", "space-md": "0.75rem", "gutter": "0.75rem", "space-sm": "0.5rem", "space-lg": "1rem", "space-xl": "1.5rem" }, "fontFamily": { "headline-sm": ["Space Grotesk"], "body-sm": ["Plus Jakarta Sans"], "title-md": ["Plus Jakarta Sans"], "label-lg": ["Space Grotesk"], "headline-lg": ["Space Grotesk"], "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Space Grotesk"], "label-md": ["Space Grotesk"], "body-md": ["Plus Jakarta Sans"], "label-sm": ["Space Grotesk"], "display-score": ["Space Grotesk"] }, "fontSize": { "headline-sm": ["16px", { "lineHeight": "22px", "fontWeight": "600" }], "body-sm": ["11px", { "lineHeight": "16px", "fontWeight": "400" }], "title-md": ["15px", { "lineHeight": "20px", "fontWeight": "600" }], "label-lg": ["13px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-lg": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "body-lg": ["15px", { "lineHeight": "22px", "fontWeight": "400" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }], "body-md": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "label-sm": ["10px", { "lineHeight": "12px", "letterSpacing": "0.08em", "fontWeight": "700" }], "display-score": ["36px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#0d1320;color:#dde2f5;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.4)]"><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button class="w-11 h-11 flex items-center justify-center text-on-surface hover:text-secondary-container transition-colors -ml-space-xs" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase text-secondary-container tracking-wider">NaSCon Arena 2026</span><h1 class="font-headline-sm text-headline-sm tracking-tight text-on-surface uppercase truncate max-w-[190px]">Athlete Profile</h1></div></div><div class="flex items-center gap-space-xs"><button class="w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded-full transition-colors"><span class="material-symbols-outlined text-[20px]">share</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-14 bg-surface px-margin pb-safe"><div class="flex flex-col w-full pb-20">
+<!-- Search & Filter Bar -->
+<div class="flex flex-col gap-space-sm mb-space-lg">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full bg-surface-container-low text-on-surface placeholder:text-outline text-body-md py-3 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all" placeholder="Search VODs, athletes, or tournaments..." type="text"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+<!-- Filter Pills Horizontal Scroller -->
+<div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar py-1">
+<button class="px-3 py-1.5 rounded-full bg-primary text-on-primary font-label-sm whitespace-shadow transition-all shadow-[0_4px_12px_rgba(37,99,235,0.35)]">All VODs</button>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-sm whitespace-nowrap transition-all">Full Matches</button>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-sm whitespace-nowrap transition-all">Athlete Highlights</button>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-sm whitespace-nowrap transition-all">Quarter Finals</button>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-sm whitespace-nowrap transition-all">Finals</button>
+</div>
+</div>
+<!-- Featured / Active Video Player Preview Section -->
+<div class="flex flex-col rounded-xl bg-surface-container overflow-hidden mb-space-lg shadow-xl relative group">
+<div class="relative w-full aspect-video bg-surface-container-high bg-cover bg-center flex items-center justify-center" data-alt="Cinematic night floodlit stadium arena filled with electric blue and cyan lights, packed energetic crowd cheering during an intense esports and athletics tournament final match, high contrast dramatic sports broadcast aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAERcU7cWe0MgpuWTj1jhZe_XAMbW13zg1mmQ0AhnZewPrgBrsW_slcUrKSN2SOpm3KeK8n-3xxJk-DztmV86xQAwfTW-fK8GYpjEwy2BpCj8sVEmFVOH0L9OsW2y-LSXK97Lv1QuDbqG8sB5ItttLVU61cOEp3f4VaLRuu6m5agMEJ5NtBFuC9PAYp7AKiV5_J_pQCrjI4thK5WH-EWP6VzUTgc5g-cfNZ5GcydyVB-yuOtVi1mXKS')">
+<!-- Gradient Scrim -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-surface-container/20 to-transparent"></div>
+<!-- Duration Badge -->
+<div class="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-surface/80 backdrop-blur-md text-on-surface font-label-sm tracking-widest flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+        LIVE VOD • 1:42:15
+      </div>
+<!-- Match Association Tag -->
+<div class="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-primary/20 backdrop-blur-md text-secondary border border-secondary/30 font-label-sm uppercase">
+        Grand Finals • Valorant Arena
+      </div>
+<!-- Play Control Overlay Button -->
+<button class="w-16 h-16 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_0_30px_rgba(37,99,235,0.6)] transform group-hover:scale-105 transition-transform z-10" onclick="openVideoPlayer('NaSCon 2026 Grand Finals - Apex Titans vs Cyber Knights')">
+<span class="material-symbols-outlined text-[36px] ml-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<!-- Bottom Player Meta inside Hero -->
+<div class="absolute bottom-3 left-3 right-3 flex items-end justify-between z-10 pointer-events-none">
+<div class="flex flex-col">
+<span class="font-headline-sm text-on-surface truncate">Apex Titans vs. Cyber Knights (Map 3)</span>
+<span class="text-body-sm text-on-surface-variant">Cast by NaSCon Broadcast Team • 24.5K views</span>
+</div>
+<button class="pointer-events-auto p-2 rounded-lg bg-surface/60 backdrop-blur-md text-on-surface hover:text-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">bookmark</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Section Header -->
+<div class="flex items-center justify-between mb-space-md">
+<h2 class="font-headline-sm uppercase text-on-surface tracking-wide flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+      Trending VOD Archive &amp; Highlights
+    </h2>
+<span class="text-body-sm text-outline">18 Recordings</span>
+</div>
+<!-- Video Grid (2 Columns) -->
+<div class="grid grid-cols-2 gap-gutter">
+<!-- VOD Card 1 -->
+<div class="flex flex-col bg-surface-container rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-primary transition-all group" onclick="openVideoPlayer('Athlete Spotlight: Zainab &amp; Bilal Tekken Showdown')">
+<div class="relative w-full aspect-[16/10] bg-surface-container-high bg-cover bg-center" data-alt="Close up dynamic shot of an elite esports athlete intensely focused on a mechanical keyboard with glowing RGB neon cyan backlighting under dark dramatic stadium atmospheric lighting." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD4sorvFYLZxiX_NXGNF_lYoNJJOHYjWKehULmgugsHrrRpHSpUZeV-6gRlERBKa0NgDmYrHkk7Ek3qNr_Bv8hcJj5X024B0c4wXJgfRKEtwtRafG_J-AscA2ilEzcU5MFzoNo4k1momzkN8jXdA80Hzd253XNAAMXG1ONqSz2ai5w9F-eqBFZFtCBpyIqR11uRC5cypBtxpa9W5mHtNG03kXz8ceUdiITTplmyuUT0bdLewQxrmzWB')">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent"></div>
+<div class="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface/80 backdrop-blur-sm text-on-surface font-label-sm">
+          04:20
+        </div>
+<div class="absolute top-2 left-2 px-2 py-0.5 rounded bg-secondary-container/20 text-secondary border border-secondary/30 font-label-sm uppercase">
+          Highlight
+        </div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-surface/40 backdrop-blur-[2px]">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="p-space-sm flex flex-col gap-1">
+<span class="font-title-md text-on-surface line-clamp-1 group-hover:text-secondary transition-colors">Tekken 8 Grand Final Clutch Moments</span>
+<div class="flex items-center justify-between text-body-sm text-outline">
+<span>Tekken Arena</span>
+<span>1.2K views</span>
+</div>
+</div>
+</div>
+<!-- VOD Card 2 -->
+<div class="flex flex-col bg-surface-container rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-primary transition-all group" onclick="openVideoPlayer('Speed Sprint 100m Semi-Finals Full Replay')">
+<div class="relative w-full aspect-[16/10] bg-surface-container-high bg-cover bg-center" data-alt="Athletes sprinting on a professional outdoor running track at night under bright stadium LED floodlights, motion blur, vibrant energy and athletic competition." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBNOT1ZANhbFPrxVNXDcazy3LkGyOeRijglUtqF-eQjrPKEHlrD_5aOQIqTlHUHjGfkWCbJsqRau6_J3IfN0fLgleVKVfNResuF8gerYNhh2KOMq5FWll9LnfPx9uASYucTH1RYxNCLXPpbxNIp_wmMrNUu-ZIrubqIvhXot3-5jsl8xyaLdmxxZirP1KvO7ePA5_otOyWdVCBDIaqz0fx-Ro91jrwEuv7VRzix2wGuhOfvU7DVALuA')">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent"></div>
+<div class="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface/80 backdrop-blur-sm text-on-surface font-label-sm">
+          45:10
+        </div>
+<div class="absolute top-2 left-2 px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 font-label-sm uppercase">
+          Full Match
+        </div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-surface/40 backdrop-blur-[2px]">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="p-space-sm flex flex-col gap-1">
+<span class="font-title-md text-on-surface line-clamp-1 group-hover:text-secondary transition-colors">100m Athletics Sprint Semi-Finals</span>
+<div class="flex items-center justify-between text-body-sm text-outline">
+<span>Track Arena</span>
+<span>3.4K views</span>
+</div>
+</div>
+</div>
+<!-- VOD Card 3 -->
+<div class="flex flex-col bg-surface-container rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-primary transition-all group" onclick="openVideoPlayer('Futsal Semi-Final: Fast Falcons vs Lightning Strikers')">
+<div class="relative w-full aspect-[16/10] bg-surface-container-high bg-cover bg-center" data-alt="Indoor futsal arena match with players competing fiercely under neon stadium lights, dynamic action shot of a soccer ball and players in colorful sportswear." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAqylj1W2GBj3nwzlEliqmRdRpE7_603nteUgTeBbUGHKT70RMd2kimENq8QxFuM0SFXw2KtNyoNfl7eC2FFPEJV9lOgOm8IxQ43m9nQvzgvn2QcmMQjfwHtxlkpx0pHF2Zzh-WUl8UvQtNuYTtYXwRoI-TuqZYYtIkguf1vm27n24p0li7LrAC1CYLnpwkfeGakmpNlX7CF7vLX9AaHXllRyo2wmArDsgufC7yG7IaliGxyJVq6VWk')">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent"></div>
+<div class="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface/80 backdrop-blur-sm text-on-surface font-label-sm">
+          1:12:30
+        </div>
+<div class="absolute top-2 left-2 px-2 py-0.5 rounded bg-primary/20 text-primary border border-primary/30 font-label-sm uppercase">
+          Full Match
+        </div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-surface/40 backdrop-blur-[2px]">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="p-space-sm flex flex-col gap-1">
+<span class="font-title-md text-on-surface line-clamp-1 group-hover:text-secondary transition-colors">Futsal Semi-Final: Falcons vs Strikers</span>
+<div class="flex items-center justify-between text-body-sm text-outline">
+<span>Indoor Arena</span>
+<span>5.8K views</span>
+</div>
+</div>
+</div>
+<!-- VOD Card 4 -->
+<div class="flex flex-col bg-surface-container rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-primary transition-all group" onclick="openVideoPlayer('Badminton Singles Championship Match Highlights')">
+<div class="relative w-full aspect-[16/10] bg-surface-container-high bg-cover bg-center" data-alt="Badminton tournament indoors with high overhead lighting, athlete swinging racket with precision focus, professional sports venue aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZzmqnBBSoxvyiLK19cDlPvXsntvPO8xcnxHNxNFh_0c7c7UOPoBH45efnNmFJo48x2GsHvaU_q_uZf7MWrUZ_yKSe2B-dZgLMP5XgEaqT2MBSsfGPwy9gyYL0r9Kbf3xM47a5kNh3W1McGuNk4h8vcQbSU2x8bDoXGOJFL0beFiMr7MzFIkuYtEAwLdhUHyK295rdequJW3wz9MeakW8JS_ByiJuIHxsLjhi1U0hXxOz9Y5pZLBEC')">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container via-transparent to-transparent"></div>
+<div class="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface/80 backdrop-blur-sm text-on-surface font-label-sm">
+          08:15
+        </div>
+<div class="absolute top-2 left-2 px-2 py-0.5 rounded bg-secondary-container/20 text-secondary border border-secondary/30 font-label-sm uppercase">
+          Highlight
+        </div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-surface/40 backdrop-blur-[2px]">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="p-space-sm flex flex-col gap-1">
+<span class="font-title-md text-on-surface line-clamp-1 group-hover:text-secondary transition-colors">Badminton Singles Championship Rallies</span>
+<div class="flex items-center justify-between text-body-sm text-outline">
+<span>Badminton Hall</span>
+<span>920 views</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Mock Video Modal Overlay (Hidden by default) -->
+<div class="fixed inset-0 z-50 bg-surface/95 backdrop-blur-xl hidden flex-col justify-between p-margin pt-16" id="videoModal">
+<!-- Top Bar Inside Modal -->
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm uppercase text-secondary-container">Now Playing</span>
+<h3 class="font-headline-sm text-on-surface truncate max-w-[280px]" id="modalTitle">Match Video Title</h3>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:text-error" onclick="closeVideoPlayer()">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<!-- Center Player Simulator -->
+<div class="relative w-full aspect-video bg-surface-container-highest rounded-xl overflow-hidden flex items-center justify-center shadow-2xl my-auto" data-alt="Immersive simulated video player screen with dark stadium lighting, tournament overlay graphics, and playback control interface." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBu7pdemHxLejg7DpTjYnCzJP7y5ysWM1u1EnFCUMh0C1hyY0ptNljvMzXoN6C8SE1w38yRjQzOkK81JHfNO7Pq9vBj2Fs_d-HfbzmgBKA3iIZ7JwSJ6L_Mt7tmVrnpErwdNB848VupwAT16543rbOiWN-cTEDcXPveOg8sJ82JenTpjTSU0a_Bp1zpyIsAzx2XeU7zFj3c8Z8UabzHDMTaaMst35AHZBwX7hYXU4z6zfYwlAV46GPu')">
+<!-- Simulated Player Controls Bar -->
+<div class="absolute inset-0 flex items-center justify-center">
+<button class="w-16 h-16 rounded-full bg-primary/90 text-on-primary flex items-center justify-center shadow-[0_0_24px_rgba(37,99,235,0.6)] transform hover:scale-105 transition-all" id="playPauseBtn" onclick="togglePlayState()">
+<span class="material-symbols-outlined text-[36px] ml-1" id="playIcon" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+</div>
+<!-- Bottom Player HUD -->
+<div class="absolute bottom-0 left-0 right-0 p-space-md bg-gradient-to-t from-surface-dim/90 to-transparent flex flex-col gap-2">
+<!-- Progress Bar -->
+<div class="w-full bg-outline-variant/40 h-1.5 rounded-full overflow-hidden cursor-pointer relative">
+<div class="bg-primary h-full w-2/3 rounded-full relative">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-secondary shadow"></div>
+</div>
+</div>
+<!-- Time & Controls Row -->
+<div class="flex items-center justify-between text-body-sm text-on-surface">
+<div class="flex items-center gap-3">
+<span id="currentTime">12:45</span>
+<span class="text-outline">/</span>
+<span class="text-outline">45:10</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="hover:text-secondary" onclick="toggleMute()"><span class="material-symbols-outlined text-[20px]" id="volumeIcon">volume_up</span></button>
+<button class="hover:text-secondary"><span class="material-symbols-outlined text-[20px]">hd</span></button>
+<button class="hover:text-secondary"><span class="material-symbols-outlined text-[20px]">fullscreen</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Related Action Sheet / Info -->
+<div class="flex flex-col gap-space-sm bg-surface-container p-space-md rounded-xl">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-headline-sm">NS</div>
+<div class="flex flex-col">
+<span class="font-title-md text-on-surface">NaSCon 2026 Official Channel</span>
+<span class="text-body-sm text-outline">14.2K Subscribers</span>
+</div>
+</div>
+<button class="px-4 py-2 rounded-lg bg-primary text-on-primary font-label-lg shadow-[0_4px_16px_rgba(37,99,235,0.35)]">Subscribe</button>
+</div>
+</div>
+</div>
+<script>
+    function openVideoPlayer(title) {
+      document.getElementById('modalTitle').innerText = title;
+      const modal = document.getElementById('videoModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeVideoPlayer() {
+      const modal = document.getElementById('videoModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    let isPlaying = true;
+    function togglePlayState() {
+      isPlaying = !isPlaying;
+      const icon = document.getElementById('playIcon');
+      icon.innerText = isPlaying ? 'pause' : 'play_arrow';
+    }
+
+    let isMuted = false;
+    function toggleMute() {
+      isMuted = !isMuted;
+      const volIcon = document.getElementById('volumeIcon');
+      volIcon.innerText = isMuted ? 'volume_off' : 'volume_up';
+    }
+  </script>
+</div></main></body></html>
